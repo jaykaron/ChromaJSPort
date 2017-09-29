@@ -1,45 +1,110 @@
 
-var canvasW, canvasH;
 var background;
-
-var w,h;
-var x,y;
+var pc;
+var platforms = [];
 
 function init() {
 
-  var canvas = document.getElementById('mainCanvas');
-  canvasW = canvas.width; canvasH = canvas.height;
-  var context = canvas.getContext('2d');
+  var background = new Raster("background");
+  background.position = view.center;
 
-  /*var preCanvas = document.createElement('canvas');
-  preCanvas.width = 1000;
-  preCanvas.height = 600;
-  var preContext = preCanvas.getContext("2d");*/
+  pc = new PC(400,250);
 
-  loadImages();
+  // pcPath = new Path.Rectangle(pc.box);
+  // pcPath.fillColor = "red";
 
-  w = 100; h = 100;
-  x = 400; y = 250;
+  platforms.push(new Platform(new Rectangle(300,400, 400,50), 1,0));
+}
 
-  player = new Player(400,250);
+function onFrame(event) {
+  //console.log(event.delta);
+  pc.move();
+  for (var i=0; i<platforms.length; i++)
+    platforms[i].move();
 
-  if (canvas.getContext) {
-      setInterval(draw, 30, canvas, context);
+
+}
+
+function PC(x, y) {
+    this.w = 35; this.h = 35;
+
+    this.v = 0; this.a = 0.5;   // Velocity, Acceleration
+    this.c = 0;     // Color
+
+    this.jumping = false;
+    this.onPlatform = false;
+
+    this.box = new Rectangle(x,y, this.w,this.h);
+    this.path = new Path.Rectangle(this.box);
+    this.path.fillColor = "green";
+
+    this.move = function() {
+      /* Checks if PC intersects platform
+     	 * if not move PC down
+     	 * && statements make it so you can jump up from under platforms
+     	 */
+
+        this.checkPlatforms();
+
+     	 	if(!this.onPlatform){
+        		this.v += this.a;
+            this.box.y += this.v;
+     	 	}
+        else {
+          this.v = 0;
+        }
+
+        var vector = new Point(0, pc.v);
+        this.path.position += vector;
+    }
+
+    this.increaseV = function () {
+    /* First does a hop if on platform
+     * Then slowly increases velocity, until a cap */
+    	if(onPlatform==true){
+    		v=v-9;
+    	}
+    	else if(jumping==true){
+    		v=v-2;;
+    	}
+    	if(v<-19){
+    		jumping =false;
+    	}
+    }
+
+    this.nextC = function() {
+      /* Switches to the next color */
+      c = (c + 1) % 3;
+    }
+
+    this.prevC = function() {
+      /* Switches to the previous color */
+      c = (c + 2) % 3;
+    }
+
+    this.checkPlatforms = function() {
+      //this.onPlatform = this.box.intersects(platforms[0].box);
+      for (var i=0; i<platforms.length; i++)
+        if(this.box.intersects(platforms[i].box)){
+          this.onPlatform = true;
+          return;
+        }
+      this.onPlatform = false;
+    }
+}
+
+function Platform(rect, v, c) {
+  this.box = rect;
+  this.path = new Path.Rectangle(this.box);
+  this.path.fillColor = "blue";
+
+  this.v = v; this.c = c;
+
+  this.move = function() {
+    this.box.x -= v;
+    var vector = new Point(-v, 0);
+    this.path.position += vector;
   }
-}
-
-function loadImages() {
-  background = new Image();
-  background.src = "imgs/background.png";
-}
-
-function draw(canvas, context) {
-  context.clearRect(0,0, canvasW,canvasH);
-  context.beginPath();
-  context.drawImage(background,0,0)
-  context.rect(player.x,player.y, player.w,player.h);
-  context.fill();
-  player.x++; player.y++;
 }
 
 init();
