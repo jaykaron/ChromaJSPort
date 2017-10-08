@@ -15,25 +15,15 @@ function init() {
 
   pc = new PC(400,50);
 
-  platforms.push(new Platform(new Rectangle(300,275, 250,30), 1.5,0));
-  for (var i=0; i<6; i++)
-    platforms.push(new Platform(new Rectangle(300+250*i,275+Math.floor(Math.random()*100), 200,30), 1.5,0));
+  platforms.push(new Platform(new Rectangle(300,275, 250,30), 1.75,0));
+  for(var i=0; i<4; i++)
+    newPlatform();
+
 }
 function initBackground(){
   var background = new Raster("background");
   background.position = view.center;
   vText = new PointText(10,25);
-
-  var halfWidth = 250;
-  backRect = new Path.Rectangle(500-halfWidth, 300-halfWidth, 2*halfWidth,2*halfWidth);
-  // backRect.fillColor = {
-  //       gradient: {
-  //           stops: ['yellow', 'red', 'blue']
-  //       },
-  //       origin: view.center,
-  //       destination: new Point(180,500)
-  //     }
-  backRect.rotate(45);
 }
 function initMusic() {
   music.play();
@@ -52,6 +42,7 @@ function onFrame(event) {
   if(clearPlatforms) {
     if (platforms[0].offScreen) {
       platforms.shift();
+      newPlatform();
     }
   }
   showInfo();   //Updates the vText
@@ -60,6 +51,18 @@ function showInfo() {
   vText.content = "V: " + pc.v;
 }
 
+function newPlatform() {
+  var lastPlat = platforms[platforms.length-1];
+  var newOriginPoint;
+  do {
+    newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100,150), randomInt(-200,200));
+  } while (newOriginPoint.y > 550 || newOriginPoint.y < 50);
+  console.log(view.bounds.contains(newOriginPoint));
+  platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),1.75, randomInt(0,3)));
+}
+function randomInt(min, max) {
+  return Math.floor(Math.random()*(max-min)+min);
+}
 function onKeyDown(event){
   switch (event.key) {
     case 'f':
@@ -161,11 +164,13 @@ function PC(x, y) {
       if(Key.isDown('space') && !this.peaked) {
         if(this.onPlatform && this.v >= 0) {
       		this.v -= 5;
+          console.log("big");
       	}
-      	else if (!this.peaked) {
+      	else if (!this.peaked && this.v < 0) {
       		this.v -= 1;
+          console.log("small");
       	}
-        if(this.v <- 15) {
+        if(this.v <- 15 || this.v > 0) {
       		this.peaked = true;
       	}
       }
