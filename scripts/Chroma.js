@@ -14,6 +14,8 @@ var music = new Audio("ChoazFantasy.mp3");
 var soundButton;    //A path, clicking it toggles the music
 
 var gameSpeed = 1;
+var gameSpeedIncrement = 0.2; // How much the game speeds up each time
+var platformSpeed = 1.7;
 
 function init() {
 
@@ -23,7 +25,7 @@ function init() {
 
   pc = new PC(400,50);
 
-  platforms.push(new Platform(new Rectangle(300,275, 250,30), 1.5,0));
+  platforms.push(new Platform(new Rectangle(300,275, 250,30), platformSpeed,0));
   for(var i=0; i<8; i++)
     newPlatform();
 
@@ -68,7 +70,7 @@ function showInfo() {
   vText.content = "V: " + pc.v;
   var timePassed =  Math.round((Date.now() - startTime)/1000);
   if(timePassed % 15 == 0) {
-    gameSpeed = 1 + 0.1 * (timePassed / 15);
+    gameSpeed = 1 + gameSpeedIncrement * (timePassed / 15);
     console.log("SPEED UP "+gameSpeed);
   }
   if(timePassed > timeText.content)
@@ -83,7 +85,7 @@ function newPlatform() {
   do {
     newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100,150), randomInt(-200,200));
   } while (newOriginPoint.y > 550 || newOriginPoint.y < 50);
-  platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),1.5, randomInt(0,3)));
+  platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),platformSpeed, randomInt(0,3)));
 }
 function randomInt(min, max) {
   return Math.floor(Math.random()*(max-min)+min);

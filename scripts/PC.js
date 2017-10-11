@@ -6,6 +6,7 @@ function PC(x, y) {
 
     this.v = 0; this.a = 0.5;   // Velocity, Acceleration
     this.MAX_V = 25;
+    this.MIN_V = -12;
 
     this.c = 0;     // Color
 
@@ -82,13 +83,13 @@ function PC(x, y) {
 
     this.updateV = function() {
       if(Key.isDown('space') && !this.peaked) {
-        if(this.onPlatform && this.v >= 0) {
-      		this.v -= 5;
+        if(this.onPlatform && this.v >= 0) {    //Landing or on a platform
+      		this.v = -5;
       	}
       	else if (!this.peaked && this.v < 0) {
-      		this.v -= 1;
+      		this.v -= 0.5;
       	}
-        if(this.v <- 15 || this.v > 0) {
+        if(this.v < this.MIN_V || this.v > 0) {
       		this.peaked = true;
       	}
       }
@@ -98,7 +99,7 @@ function PC(x, y) {
       else if (this.v > 0) {
         this.v = 0;
       }
-      if(this.v > 25)
+      if(this.v > this.MAX_V)
         this.v = this.MAX_V;
     }
 }
