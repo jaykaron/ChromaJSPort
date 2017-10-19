@@ -1,50 +1,54 @@
 
+// ********** Start of Chroma.js **********
+
 var background; // Background Image
 var pc;         // The player obj
 var platforms = [];   //Array holding all the platform obj.s
-var vText;            // TEMP - TextPoint obj. showing the velocity
-var clearPlatforms; // A boolean true when a platform is off the screen to the right
+var startTime;
+
+var clearPlatforms; // A boolean true when a platform is off the screen to the left
+
 
 var music = new Audio("ChoazFantasy.mp3");
-var musicButton;    //A path, clicking it toggles the music
+
+var prevLevel;
+var level = 1;
+var timeIncrement = 15; // Number of seconds between level
+var initialGameSpeed = 1;
+var gameSpeed = initialGameSpeed;
+var gameSpeedIncrement = 0.2; // How much the game speeds up each time
+var platformSpeed = 1.7;
+
+var timePassed = 0;
 
 function init() {
 
   initBackground();
+  initHud();
   initMusic();
 
   pc = new PC(400,50);
 
-  platforms.push(new Platform(new Rectangle(300,275, 250,30), 1.5,0));
-  for (var i=0; i<6; i++)
-    platforms.push(new Platform(new Rectangle(300+250*i,275+Math.floor(Math.random()*100), 200,30), 1.5,0));
+  platforms.push(new Platform(new Rectangle(300,275, 250,30), platformSpeed,0));
+  for(var i=0; i<8; i++)
+    newPlatform();
+
+  startTime = Date.now();
+
 }
 function initBackground(){
-  var background = new Raster("background");
+  background = new Raster("background");
   background.position = view.center;
-  vText = new PointText(10,25);
-
-  var halfWidth = 250;
-  backRect = new Path.Rectangle(500-halfWidth, 300-halfWidth, 2*halfWidth,2*halfWidth);
-  // backRect.fillColor = {
-  //       gradient: {
-  //           stops: ['yellow', 'red', 'blue']
-  //       },
-  //       origin: view.center,
-  //       destination: new Point(180,500)
-  //     }
-  backRect.rotate(45);
 }
 function initMusic() {
   music.play();
   music.loop = true;
-  musicButton = new Path.Rectangle(950,550, 40,40);
-  musicButton.fillColor= "black";   //TEMP - need icon
+  music.volume = 1;
+
 }
 
 // The GAME LOOP
 function onFrame(event) {
-
   pc.move();
   for (var i=0; i<platforms.length; i++)
     platforms[i].move();
@@ -52,14 +56,38 @@ function onFrame(event) {
   if(clearPlatforms) {
     if (platforms[0].offScreen) {
       platforms.shift();
+      newPlatform();
     }
   }
-  showInfo();   //Updates the vText
+  updateTime();   //Updates the vText
+  updateHudNewFrame();
 }
-function showInfo() {
-  vText.content = "V: " + pc.v;
+function updateTime() {
+  timePassed =  Math.round((Date.now() - startTime)/1000);
+  if(timePassed % timeIncrement == 0)
+    if (level < 1 + timePassed / timeIncrement)
+      nextLevel();
+  if(timePassed > showedTime)
+    updateHudNewSecond();
+}
+function nextLevel() {
+  level++;
+  gameSpeed = initialGameSpeed + gameSpeedIncrement * (level - 1);
+  updateHudNewLevel();
 }
 
+function newPlatform() {
+  var lastPlat = platforms[platforms.length-1];
+  var newOriginPoint;
+
+  do {
+    newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100,150), randomInt(-200,200));
+  } while (newOriginPoint.y > 550 || newOriginPoint.y < 50);
+  platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),platformSpeed, randomInt(0,3)));
+}
+function randomInt(min, max) {
+  return Math.floor(Math.random()*(max-min)+min);
+}
 function onKeyDown(event){
   switch (event.key) {
     case 'f':
@@ -78,155 +106,39 @@ function onKeyUp(event) {
     pc.peaked = true;
 }
 
-function PC(x, y) {
-    this.w = 35; this.h = 35;
-
-    this.v = 0; this.a = 0.5;   // Velocity, Acceleration
-    this.MAX_V = 25;
-
-    this.c = 0;     // Color
-
-    this.peaked = false;
-    this.onPlatform = false;
-
-    this.box = new Rectangle(x,y, this.w,this.h);
-    this.path = new Path.Rectangle(this.box);
-    this.path.fillColor = "red";
-    this.path.strokeColor = "black";
-
-    this.move = function() {
-
-      this.updateV();
-
-      this.shift(this.v);
-
-      var currentPlatform = this.checkPlatforms();
-      if(currentPlatform) {
-        this.shift(-this.box.intersect(currentPlatform.box).height);
-      }
-    }
-
-    this.shift = function(deltaY) {
-      this.box.y += deltaY;
-      var vector = new Point(0, deltaY);
-      this.path.position += vector;
-    }
-
-    this.nextC = function() {
-      /* Switches to the next color */
-      this.c = (this.c + 1) % 3;
-      this.updateC();
-    }
-
-    this.prevC = function() {
-      /* Switches to the previous color */
-      this.c = (this.c + 2) % 3;
-      this.updateC();
-    }
-    this.updateC = function() {
-      switch (this.c) {
-        case 0:
-          this.path.fillColor = "red";
-          break;
-        case 1:
-          this.path.fillColor = "blue";
-          break;
-        case 2:
-          this.path.fillColor = "green";
-          break;
-        default:
-          this.path.fillColor = "red";
-      }
-    }
-
-    this.checkPlatforms = function() {
-      if(this.v < 0) {
-        this.onPlatform = false;
-        return null;
-      }
-      for (var i=0; i<platforms.length; i++) {
-        if (platforms[i].c == this.c) {
-          if(platforms[i].box.contains(this.box.bottomRight) || platforms[i].box.contains(this.box.bottomLeft)) {
-            this.onPlatform = true;
-            this.peaked = false;
-            return platforms[i];
-          }
-        }
-      }
-      this.onPlatform = false;
-      return null;
-    }
-
-    this.updateV = function() {
-      if(Key.isDown('space') && !this.peaked) {
-        if(this.onPlatform && this.v >= 0) {
-      		this.v -= 5;
-      	}
-      	else if (!this.peaked) {
-      		this.v -= 1;
-      	}
-        if(this.v <- 15) {
-      		this.peaked = true;
-      	}
-      }
-      else if(!this.onPlatform) {
-          this.v += this.a;
-      }
-      else if (this.v > 0) {
-        this.v = 0;
-      }
-      if(this.v > 25)
-        this.v = this.MAX_V;
-    }
-}
-
-function Platform(rect, v, c) {
-  this.move = function() {
-    this.box.x -= v;
-    if(this.box.topRight.x < 0) {
-      clearPlatforms = true;
-      this.offScreen = true;
-    }
-
-    var vector = new Point(-v, 0);
-    this.path.position += vector;
-  }
-
-  this.updateC = function() {
-    switch (this.c) {
-      case 0:
-        this.path.fillColor = "red";
+function onMouseDown(event) {
+  if(soundButton.box.contains(event.point)) {
+    switch (music.volume) {
+      case 0.5:
+        music.volume = 1;
+        soundButton.image = document.getElementById("volumeHigh")
         break;
       case 1:
-        this.path.fillColor = "blue";
+        music.volume = 0;
+        soundButton.image = document.getElementById("volumeOff")
         break;
-      case 2:
-        this.path.fillColor = "green";
+      case 0:
+        music.volume = 0.25;
+        soundButton.image = document.getElementById("volumeLow")
+        break;
+      case 0.25:
+        music.volume = 0.5;
+        soundButton.image = document.getElementById("volumeMed")
         break;
       default:
-        this.path.fillColor = "red";
+        music.volume = 1;
+        soundButton.image = document.getElementById("volumeHigh")
+        break;
     }
-  }
-
-  this.box = rect;
-  this.path = new Path.Rectangle(this.box);
-  this.path.strokeColor = "black";
-
-  this.v = v; this.c = c;
-
-  this.offScreen = false;
-
-  this.updateC();
-
-}
-
-function onMouseDown(event) {
-  if(musicButton.contains(event.point)) {
-    if(music.paused)
+    /*if(music.paused) {
       music.play();
-    else
+      soundButton.image = document.getElementById("soundOn");
+    }
+    else {
       music.pause();
+      soundButton.image = document.getElementById("soundOff");
+    }*/
   }
 }
 
-init();
+// ********** End of Chroma.js **********
