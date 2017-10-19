@@ -10,7 +10,7 @@ function PC(x, y) {
 
     this.c = 0;     // Color
 
-    this.peaked = false;
+    this.peaked = true;
     this.onPlatform = false;
 
     this.box = new Rectangle(x,y, this.w,this.h);
@@ -34,6 +34,9 @@ function PC(x, y) {
       this.box.y += deltaY;
       var vector = new Point(0, deltaY);
       this.path.position += vector;
+      if(this.box.topRight.y > 600) {
+        gameOver = true;
+      }
     }
 
     this.nextC = function() {
