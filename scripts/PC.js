@@ -1,10 +1,10 @@
 
-// Start of PC.js
+// ********** Start of PC.js **********
 
 function PC(x, y) {
     this.w = 35; this.h = 35;
 
-    this.v = 0; this.a = 0.5;   // Velocity, Acceleration
+    this.v = 0; this.a = 0.5;   // Velocity, fallingAcceleration
     this.MAX_V = 25;
     this.MIN_V = -12;
 
@@ -104,4 +104,4 @@ function PC(x, y) {
     }
 }
 
-// End of PC.js
+// ********** End of PC.js **********

@@ -1,5 +1,5 @@
 
-// Start of Platform.js
+// ********** Start of Platform.js **********
 
 function Platform(rect, v, c) {
   this.move = function() {
@@ -41,4 +41,4 @@ function Platform(rect, v, c) {
 
 }
 
-// End of Platform.js
+// ********** End of Platform.js **********

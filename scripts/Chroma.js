@@ -1,4 +1,6 @@
 
+// ********** Start of Chroma.js **********
+
 var background; // Background Image
 var pc;         // The player obj
 var platforms = [];   //Array holding all the platform obj.s
@@ -6,21 +8,23 @@ var startTime;
 
 var clearPlatforms; // A boolean true when a platform is off the screen to the left
 
-var vText;            // TEMP - TextPoint obj. showing the velocity
-var timeText;
-var speedText;
 
 var music = new Audio("ChoazFantasy.mp3");
-var soundButton;    //A path, clicking it toggles the music
 
-var gameSpeed = 1;
+var prevLevel;
+var level = 1;
+var timeIncrement = 15; // Number of seconds between level
+var initialGameSpeed = 1;
+var gameSpeed = initialGameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
 var platformSpeed = 1.7;
+
+var timePassed = 0;
 
 function init() {
 
   initBackground();
-  initHUD();
+  initHud();
   initMusic();
 
   pc = new PC(400,50);
@@ -36,19 +40,10 @@ function initBackground(){
   background = new Raster("background");
   background.position = view.center;
 }
-function initHUD() {
-  vText = new PointText(10,25);
-  timeText = new PointText(10,50);
-  speedText = new PointText(10,75);
-
-
-  soundButton = new Raster("soundOn");
-  soundButton.position = new Point(950, 550);
-  soundButton.box = new Path.Rectangle(925,525, 50,50);
-}
 function initMusic() {
   music.play();
   music.loop = true;
+  music.volume = 1;
 
 }
 
@@ -64,18 +59,21 @@ function onFrame(event) {
       newPlatform();
     }
   }
-  showInfo();   //Updates the vText
+  updateTime();   //Updates the vText
+  updateHudNewFrame();
 }
-function showInfo() {
-  vText.content = "V: " + pc.v;
-  var timePassed =  Math.round((Date.now() - startTime)/1000);
-  if(timePassed % 15 == 0) {
-    gameSpeed = 1 + gameSpeedIncrement * (timePassed / 15);
-    console.log("SPEED UP "+gameSpeed);
-  }
-  if(timePassed > timeText.content)
-    timeText.content = timePassed;
-  speedText.content = "Speed: "+gameSpeed;
+function updateTime() {
+  timePassed =  Math.round((Date.now() - startTime)/1000);
+  if(timePassed % timeIncrement == 0)
+    if (level < 1 + timePassed / timeIncrement)
+      nextLevel();
+  if(timePassed > showedTime)
+    updateHudNewSecond();
+}
+function nextLevel() {
+  level++;
+  gameSpeed = initialGameSpeed + gameSpeedIncrement * (level - 1);
+  updateHudNewLevel();
 }
 
 function newPlatform() {
@@ -110,15 +108,37 @@ function onKeyUp(event) {
 
 function onMouseDown(event) {
   if(soundButton.box.contains(event.point)) {
-    if(music.paused) {
+    switch (music.volume) {
+      case 0.5:
+        music.volume = 1;
+        soundButton.image = document.getElementById("volumeHigh")
+        break;
+      case 1:
+        music.volume = 0;
+        soundButton.image = document.getElementById("volumeOff")
+        break;
+      case 0:
+        music.volume = 0.25;
+        soundButton.image = document.getElementById("volumeLow")
+        break;
+      case 0.25:
+        music.volume = 0.5;
+        soundButton.image = document.getElementById("volumeMed")
+        break;
+      default:
+        music.volume = 1;
+        soundButton.image = document.getElementById("volumeHigh")
+        break;
+    }
+    /*if(music.paused) {
       music.play();
       soundButton.image = document.getElementById("soundOn");
     }
     else {
       music.pause();
       soundButton.image = document.getElementById("soundOff");
-    }
+    }*/
   }
 }
 
-init();
+// ********** End of Chroma.js **********
