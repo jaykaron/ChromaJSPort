@@ -3,7 +3,7 @@
 
 var background; // Background Image
 var pc;         // The player obj
-var platforms = [];   //Array holding all the platform obj.s
+var platforms;   //Array holding all the platform obj.s
 var startTime;
 
 var clearPlatforms; // A boolean true when a platform is off the screen to the left
@@ -12,28 +12,38 @@ var clearPlatforms; // A boolean true when a platform is off the screen to the l
 var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
-var level = 1;
+var level;
 var timeIncrement = 15; // Number of seconds between level
 var initialGameSpeed = 1;
-var gameSpeed = initialGameSpeed;
+var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
 var platformSpeed = 1.7;
 
-var timePassed = 0;
+var timePassed;
+
+var gameOver;
 
 function init() {
 
   initBackground();
-  initHud();
   initMusic();
+  
+  level = 1;
+  gameSpeed = initialGameSpeed;
+  timePassed = 0;
 
   pc = new PC(400,50);
-
+  
+  platforms = []
   platforms.push(new Platform(new Rectangle(300,275, 250,30), platformSpeed,0));
   for(var i=0; i<8; i++)
     newPlatform();
 
+    initHud();
+
   startTime = Date.now();
+  
+  gameOver = false;
 
 }
 function initBackground(){
@@ -96,6 +106,10 @@ function onKeyDown(event){
       case 'd':
         pc.prevC();
         break;
+      case 'space':
+        if(gameOver)
+          init();
+        break;
     default:
       ;
   }
@@ -130,14 +144,6 @@ function onMouseDown(event) {
         soundButton.image = document.getElementById("volumeHigh")
         break;
     }
-    /*if(music.paused) {
-      music.play();
-      soundButton.image = document.getElementById("soundOn");
-    }
-    else {
-      music.pause();
-      soundButton.image = document.getElementById("soundOff");
-    }*/
   }
 }
 
@@ -154,7 +160,7 @@ function PC(x, y) {
 
     this.c = 0;     // Color
 
-    this.peaked = false;
+    this.peaked = true;
     this.onPlatform = false;
 
     this.box = new Rectangle(x,y, this.w,this.h);
@@ -178,6 +184,9 @@ function PC(x, y) {
       this.box.y += deltaY;
       var vector = new Point(0, deltaY);
       this.path.position += vector;
+      if(this.box.topRight.y > 600) {
+        gameOver = true;
+      }
     }
 
     this.nextC = function() {
