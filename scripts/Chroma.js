@@ -21,11 +21,13 @@ var platformSpeed = 1.7;
 
 var timePassed;
 
-var gameOver;
+var gameOn;
+var canRestart;
 
 function init() {
 
-  initBackground();
+  //initBackground();
+  initBackground2();
   initMusic();
   
   level = 1;
@@ -39,11 +41,10 @@ function init() {
   for(var i=0; i<8; i++)
     newPlatform();
 
+  gameOn = true;
   initHud();
 
-  startTime = Date.now();
-  
-  gameOver = false;
+  startTime = Date.now();  
 
 }
 function initBackground(){
@@ -59,7 +60,11 @@ function initMusic() {
 
 // The GAME LOOP
 function onFrame(event) {
-  pc.move();
+  onFrameBackground();
+  if(gameOn) {
+    pc.move();
+    updateTime();
+  }
   for (var i=0; i<platforms.length; i++)
     platforms[i].move();
 
@@ -69,7 +74,7 @@ function onFrame(event) {
       newPlatform();
     }
   }
-  updateTime();   //Updates the vText
+  
   updateHudNewFrame();
 }
 function updateTime() {
@@ -95,9 +100,16 @@ function newPlatform() {
   } while (newOriginPoint.y > 550 || newOriginPoint.y < 50);
   platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),platformSpeed, randomInt(0,3)));
 }
+
 function randomInt(min, max) {
   return Math.floor(Math.random()*(max-min)+min);
 }
+
+function gameOver() {
+  gameOn = false;
+  gameOverHud();
+}
+
 function onKeyDown(event){
   switch (event.key) {
     case 'f':
@@ -107,7 +119,7 @@ function onKeyDown(event){
         pc.prevC();
         break;
       case 'space':
-        if(gameOver)
+        if(!gameOn)
           init();
         break;
     default:
