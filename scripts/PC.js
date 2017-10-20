@@ -35,7 +35,7 @@ function PC(x, y) {
       var vector = new Point(0, deltaY);
       this.path.position += vector;
       if(this.box.topRight.y > 600) {
-        gameOver = true;
+        gameOver();
       }
     }
 

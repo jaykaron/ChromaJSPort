@@ -21,11 +21,13 @@ var platformSpeed = 1.7;
 
 var timePassed;
 
-var gameOver;
+var gameOn;
+var canRestart;
 
 function init() {
 
-  initBackground();
+  //initBackground();
+  initBackground2();
   initMusic();
   
   level = 1;
@@ -39,11 +41,10 @@ function init() {
   for(var i=0; i<8; i++)
     newPlatform();
 
-    initHud();
+  gameOn = true;
+  initHud();
 
-  startTime = Date.now();
-  
-  gameOver = false;
+  startTime = Date.now();  
 
 }
 function initBackground(){
@@ -59,7 +60,11 @@ function initMusic() {
 
 // The GAME LOOP
 function onFrame(event) {
-  pc.move();
+  onFrameBackground();
+  if(gameOn) {
+    pc.move();
+    updateTime();
+  }
   for (var i=0; i<platforms.length; i++)
     platforms[i].move();
 
@@ -69,7 +74,7 @@ function onFrame(event) {
       newPlatform();
     }
   }
-  updateTime();   //Updates the vText
+  
   updateHudNewFrame();
 }
 function updateTime() {
@@ -95,9 +100,16 @@ function newPlatform() {
   } while (newOriginPoint.y > 550 || newOriginPoint.y < 50);
   platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),platformSpeed, randomInt(0,3)));
 }
+
 function randomInt(min, max) {
   return Math.floor(Math.random()*(max-min)+min);
 }
+
+function gameOver() {
+  gameOn = false;
+  gameOverHud();
+}
+
 function onKeyDown(event){
   switch (event.key) {
     case 'f':
@@ -107,7 +119,7 @@ function onKeyDown(event){
         pc.prevC();
         break;
       case 'space':
-        if(gameOver)
+        if(!gameOn)
           init();
         break;
     default:
@@ -149,6 +161,38 @@ function onMouseDown(event) {
 
 // ********** End of Chroma.js **********
 
+// ********** Start of BACKGROUND.js **********
+
+function initBackground2(){
+  backRect.bringToFront();
+  backCirc.bringToFront();
+}
+var backRect = new Path.Rectangle(0,0, 1000, 600);
+backRect.fillColor = "white";
+
+var backCirc = new Path.Circle({
+    center: view.center,
+    radius: view.bounds.height * 0.45
+});
+
+// Fill the path with a radial gradient color with three stops:
+// yellow from 0% to 5%, mix between red from 5% to 20%,
+// mix between red and black from 20% to 100%:
+backCirc.fillColor = {
+    gradient: {
+		stops: [new Color(1,1,0, 0.8), new Color(1,1,1,0.8)],
+        radial: true
+    },
+    origin: backCirc.position,
+    destination: backCirc.bounds.rightCenter
+};
+
+function onFrameBackground(event){
+  backCirc.fillColor.gradient.stops[0].color.hue+= 0.3;
+}
+
+// ********** End of BACKGROUND.js **********
+
 // ********** Start of PC.js **********
 
 function PC(x, y) {
@@ -185,7 +229,7 @@ function PC(x, y) {
       var vector = new Point(0, deltaY);
       this.path.position += vector;
       if(this.box.topRight.y > 600) {
-        gameOver = true;
+        gameOver();
       }
     }
 
@@ -309,6 +353,7 @@ var vText;            // TEMP - TextPoint obj. showing the velocity
 var timeText;
 var showedTime = 0;
 var speedText;
+var gameOverText;
 
 var soundButton;    //A path, clicking it toggles the music
 
@@ -316,6 +361,14 @@ function initHud() {
   vText = new PointText(10,25);
   timeText = new PointText(10,50);
   speedText = new PointText(10,75);
+  gameOverText = new PointText(view.center);
+  gameOverText.style = {
+    fontFamily: 'Impact',
+    fontWeight: 'bold',
+    fontSize: 50,
+    justification: 'center'
+};
+
 
 
   soundButton = new Raster("volumeMed");
@@ -341,6 +394,10 @@ function updateHudNewLevel() {
 
 function updateTimeText() {
   timeText.content = "Time: " + showedTime;
+}
+
+function gameOverHud() {
+  gameOverText.content = "GAME OVER";
 }
 
 // ********** End of HUD.js **********
