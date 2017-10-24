@@ -23,16 +23,23 @@ var timePassed;
 
 var gameOn;
 var canRestart;
-
-function init() {
-
-  //initBackground();
-  initBackground2();
+var backgroundLayer, mainLayer, hudLayer;
+function init(){
+  backgroundLayer = project.activeLayer;
+  mainLayer = new Layer();
+  hudLayer = new Layer();
+  mainLayer.activate();
+  
+  initBackground();
   initMusic();
+  newGame();
+}
+function newGame() {
+  mainLayer.removeChildren();
   
   level = 1;
   gameSpeed = initialGameSpeed;
-  timePassed = 0;
+  timePassed = 0;  
 
   pc = new PC(400,50);
   
@@ -42,20 +49,15 @@ function init() {
     newPlatform();
 
   gameOn = true;
-  initHud();
+  newHud();
 
   startTime = Date.now();  
 
-}
-function initBackground(){
-  background = new Raster("background");
-  background.position = view.center;
 }
 function initMusic() {
   music.play();
   music.loop = true;
   music.volume = 1;
-
 }
 
 // The GAME LOOP
@@ -120,7 +122,7 @@ function onKeyDown(event){
         break;
       case 'space':
         if(!gameOn)
-          init();
+          newGame();
         break;
     default:
       ;
@@ -162,31 +164,27 @@ function onMouseDown(event) {
 // ********** End of Chroma.js **********
 
 // ********** Start of BACKGROUND.js **********
+var backCirc;
 
-function initBackground2(){
-  backRect.bringToFront();
-  backCirc.bringToFront();
+function initBackground() {
+  backgroundLayer.activate();
+  backCirc = new Path.Circle({
+      center: view.center,
+      radius: view.bounds.height * 0.45,
+      opacity: 0.8
+  });
+
+  backCirc.fillColor = {
+      gradient: {
+  		stops: [new Color(1,1,0), new Color(1,1,1)],
+          radial: true
+      },
+      origin: backCirc.position,
+      destination: backCirc.bounds.rightCenter
+  };
+
+  mainLayer.activate();
 }
-var backRect = new Path.Rectangle(0,0, 1000, 600);
-backRect.fillColor = "white";
-
-var backCirc = new Path.Circle({
-    center: view.center,
-    radius: view.bounds.height * 0.45
-});
-
-// Fill the path with a radial gradient color with three stops:
-// yellow from 0% to 5%, mix between red from 5% to 20%,
-// mix between red and black from 20% to 100%:
-backCirc.fillColor = {
-    gradient: {
-		stops: [new Color(1,1,0, 0.8), new Color(1,1,1,0.8)],
-        radial: true
-    },
-    origin: backCirc.position,
-    destination: backCirc.bounds.rightCenter
-};
-
 function onFrameBackground(event){
   backCirc.fillColor.gradient.stops[0].color.hue+= 0.3;
 }
@@ -357,18 +355,21 @@ var gameOverText;
 
 var soundButton;    //A path, clicking it toggles the music
 
-function initHud() {
+function newHud() {
+  hudLayer.activate();
+  hudLayer.removeChildren();
   vText = new PointText(10,25);
   timeText = new PointText(10,50);
   speedText = new PointText(10,75);
   gameOverText = new PointText(view.center);
+  
   gameOverText.style = {
     fontFamily: 'Impact',
     fontWeight: 'bold',
     fontSize: 50,
     justification: 'center'
-};
-
+  };
+  gameOverText.content = "";
 
 
   soundButton = new Raster("volumeMed");
@@ -377,6 +378,8 @@ function initHud() {
   
   updateHudNewLevel();
   updateHudNewSecond();
+  
+  mainLayer.activate();
 }
 
 function updateHudNewFrame() {
@@ -404,7 +407,6 @@ function gameOverHud() {
 
 // ********** Start of INIT.js **********
 // The code to run after the rest of the code is already loaded
-
 init();
 
 // ********** End of INIT.js **********
