@@ -9,18 +9,21 @@ var gameOverText;
 
 var soundButton;    //A path, clicking it toggles the music
 
-function initHud() {
+function newHud() {
+  hudLayer.activate();
+  hudLayer.removeChildren();
   vText = new PointText(10,25);
   timeText = new PointText(10,50);
   speedText = new PointText(10,75);
   gameOverText = new PointText(view.center);
+  
   gameOverText.style = {
     fontFamily: 'Impact',
     fontWeight: 'bold',
     fontSize: 50,
     justification: 'center'
-};
-
+  };
+  gameOverText.content = "";
 
 
   soundButton = new Raster("volumeMed");
@@ -29,6 +32,8 @@ function initHud() {
   
   updateHudNewLevel();
   updateHudNewSecond();
+  
+  mainLayer.activate();
 }
 
 function updateHudNewFrame() {

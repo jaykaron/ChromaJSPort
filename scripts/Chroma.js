@@ -23,16 +23,23 @@ var timePassed;
 
 var gameOn;
 var canRestart;
-
-function init() {
-
-  //initBackground();
-  initBackground2();
+var backgroundLayer, mainLayer, hudLayer;
+function init(){
+  backgroundLayer = project.activeLayer;
+  mainLayer = new Layer();
+  hudLayer = new Layer();
+  mainLayer.activate();
+  
+  initBackground();
   initMusic();
+  newGame();
+}
+function newGame() {
+  mainLayer.removeChildren();
   
   level = 1;
   gameSpeed = initialGameSpeed;
-  timePassed = 0;
+  timePassed = 0;  
 
   pc = new PC(400,50);
   
@@ -42,20 +49,15 @@ function init() {
     newPlatform();
 
   gameOn = true;
-  initHud();
+  newHud();
 
   startTime = Date.now();  
 
-}
-function initBackground(){
-  background = new Raster("background");
-  background.position = view.center;
 }
 function initMusic() {
   music.play();
   music.loop = true;
   music.volume = 1;
-
 }
 
 // The GAME LOOP
@@ -120,7 +122,7 @@ function onKeyDown(event){
         break;
       case 'space':
         if(!gameOn)
-          init();
+          newGame();
         break;
     default:
       ;
