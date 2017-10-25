@@ -21,18 +21,20 @@ var platformSpeed = 1.7;
 
 var timePassed;
 
-var gameOn;
+var gameOn = false;
 var canRestart;
 var backgroundLayer, mainLayer, hudLayer;
 function init(){
   backgroundLayer = project.activeLayer;
   mainLayer = new Layer();
   hudLayer = new Layer();
+  musicControlLayer = new Layer();
   mainLayer.activate();
   
   initBackground();
   initMusic();
-  newGame();
+  
+  initWelcome();
 }
 function newGame() {
   mainLayer.removeChildren();
@@ -51,10 +53,15 @@ function newGame() {
   gameOn = true;
   newHud();
 
-  startTime = Date.now();  
+  startTime = Date.now();
 
 }
 function initMusic() {
+  musicControlLayer.activate();
+    soundButton = new Raster("volumeMed");
+    soundButton.position = new Point(950, 550);
+    soundButton.box = new Path.Rectangle(925,525, 50,50);
+  mainLayer.activate();
   music.play();
   music.loop = true;
   music.volume = 1;
@@ -67,8 +74,9 @@ function onFrame(event) {
     pc.move();
     updateTime();
   }
-  for (var i=0; i<platforms.length; i++)
+  for (var i=0; i<platforms.length; i++) {
     platforms[i].move();
+  }
 
   if(clearPlatforms) {
     if (platforms[0].offScreen) {
@@ -168,21 +176,20 @@ var backCirc;
 
 function initBackground() {
   backgroundLayer.activate();
-  backCirc = new Path.Circle({
-      center: view.center,
-      radius: view.bounds.height * 0.45,
-      opacity: 0.8
-  });
+    backCirc = new Path.Circle({
+        center: view.center,
+        radius: view.bounds.height * 0.45,
+        opacity: 0.8
+    });
 
-  backCirc.fillColor = {
-      gradient: {
-  		stops: [new Color(1,1,0), new Color(1,1,1)],
-          radial: true
-      },
-      origin: backCirc.position,
-      destination: backCirc.bounds.rightCenter
-  };
-
+    backCirc.fillColor = {
+        gradient: {
+    		stops: [new Color(1,1,0), new Color(1,1,1)],
+            radial: true
+        },
+        origin: backCirc.position,
+        destination: backCirc.bounds.rightCenter
+    };
   mainLayer.activate();
 }
 function onFrameBackground(event){
@@ -190,6 +197,28 @@ function onFrameBackground(event){
 }
 
 // ********** End of BACKGROUND.js **********
+
+function initWelcome() {
+  platforms = []
+  platforms.push(new Platform(new Rectangle(1000,275, 150,30), platformSpeed,0));
+  for(var i=0; i<8; i++)
+    newPlatform();
+  gameSpeed = initialGameSpeed*2;
+  
+  hudLayer.activate();
+    var title = new Raster("title");
+    title.position = view.center;
+    
+    var spaceText = new PointText(view.center+new Point(0,95));
+    spaceText.style = {
+      fontFamily: 'Impact',
+      fontWeight: 'bold',
+      fontSize: 35,
+      justification: 'center'
+    };
+    spaceText.content = "Press SPACE to start";
+  mainLayer.activate();
+}
 
 // ********** Start of PC.js **********
 
@@ -340,50 +369,30 @@ function Platform(rect, v, c) {
   this.offScreen = false;
 
   this.updateC();
-
 }
 
 // ********** End of Platform.js **********
 
 // ********** Start of HUD.js **********
-
-var vText;            // TEMP - TextPoint obj. showing the velocity
 var timeText;
 var showedTime = 0;
 var speedText;
-var gameOverText;
 
 var soundButton;    //A path, clicking it toggles the music
 
 function newHud() {
   hudLayer.activate();
-  hudLayer.removeChildren();
-  vText = new PointText(10,25);
-  timeText = new PointText(10,50);
-  speedText = new PointText(10,75);
-  gameOverText = new PointText(view.center);
-  
-  gameOverText.style = {
-    fontFamily: 'Impact',
-    fontWeight: 'bold',
-    fontSize: 50,
-    justification: 'center'
-  };
-  gameOverText.content = "";
-
-
-  soundButton = new Raster("volumeMed");
-  soundButton.position = new Point(950, 550);
-  soundButton.box = new Path.Rectangle(925,525, 50,50);
-  
-  updateHudNewLevel();
-  updateHudNewSecond();
-  
+    hudLayer.removeChildren();
+    timeText = new PointText(10,25);
+    speedText = new PointText(10,50);
+    
+    updateHudNewLevel();
+    updateHudNewSecond();
   mainLayer.activate();
 }
 
 function updateHudNewFrame() {
-  vText.content = "V: " + pc.v;
+  //vText.content = "V: " + pc.v;
 }
 
 function updateHudNewSecond() {
@@ -400,7 +409,25 @@ function updateTimeText() {
 }
 
 function gameOverHud() {
-  gameOverText.content = "GAME OVER";
+  hudLayer.activate();
+    var gameOverText = new PointText(view.center);
+    gameOverText.style = {
+      fontFamily: 'Impact',
+      fontWeight: 'bold',
+      fontSize: 75,
+      justification: 'center'
+    };
+    gameOverText.content = "GAME OVER";
+    
+    var restartText = new PointText(view.center+new Point(0,55));
+    restartText.style = {
+      fontFamily: 'Impact',
+      fontWeight: 'bold',
+      fontSize: 35,
+      justification: 'center'
+    };
+    restartText.content = "Press SPACE to restart";
+  mainLayer.activate();
 }
 
 // ********** End of HUD.js **********

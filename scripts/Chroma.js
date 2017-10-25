@@ -21,18 +21,20 @@ var platformSpeed = 1.7;
 
 var timePassed;
 
-var gameOn;
+var gameOn = false;
 var canRestart;
 var backgroundLayer, mainLayer, hudLayer;
 function init(){
   backgroundLayer = project.activeLayer;
   mainLayer = new Layer();
   hudLayer = new Layer();
+  musicControlLayer = new Layer();
   mainLayer.activate();
   
   initBackground();
   initMusic();
-  newGame();
+  
+  initWelcome();
 }
 function newGame() {
   mainLayer.removeChildren();
@@ -51,10 +53,15 @@ function newGame() {
   gameOn = true;
   newHud();
 
-  startTime = Date.now();  
+  startTime = Date.now();
 
 }
 function initMusic() {
+  musicControlLayer.activate();
+    soundButton = new Raster("volumeMed");
+    soundButton.position = new Point(950, 550);
+    soundButton.box = new Path.Rectangle(925,525, 50,50);
+  mainLayer.activate();
   music.play();
   music.loop = true;
   music.volume = 1;
@@ -67,8 +74,9 @@ function onFrame(event) {
     pc.move();
     updateTime();
   }
-  for (var i=0; i<platforms.length; i++)
+  for (var i=0; i<platforms.length; i++) {
     platforms[i].move();
+  }
 
   if(clearPlatforms) {
     if (platforms[0].offScreen) {

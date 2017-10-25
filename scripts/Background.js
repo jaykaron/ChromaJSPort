@@ -4,21 +4,20 @@ var backCirc;
 
 function initBackground() {
   backgroundLayer.activate();
-  backCirc = new Path.Circle({
-      center: view.center,
-      radius: view.bounds.height * 0.45,
-      opacity: 0.8
-  });
+    backCirc = new Path.Circle({
+        center: view.center,
+        radius: view.bounds.height * 0.45,
+        opacity: 0.8
+    });
 
-  backCirc.fillColor = {
-      gradient: {
-  		stops: [new Color(1,1,0), new Color(1,1,1)],
-          radial: true
-      },
-      origin: backCirc.position,
-      destination: backCirc.bounds.rightCenter
-  };
-
+    backCirc.fillColor = {
+        gradient: {
+    		stops: [new Color(1,1,0), new Color(1,1,1)],
+            radial: true
+        },
+        origin: backCirc.position,
+        destination: backCirc.bounds.rightCenter
+    };
   mainLayer.activate();
 }
 function onFrameBackground(event){

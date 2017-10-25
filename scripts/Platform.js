@@ -38,7 +38,6 @@ function Platform(rect, v, c) {
   this.offScreen = false;
 
   this.updateC();
-
 }
 
 // ********** End of Platform.js **********
