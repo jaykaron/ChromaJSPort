@@ -22,7 +22,7 @@ var platformSpeed = 1.7;
 var timePassed;
 
 var gameOn = false;
-var canRestart;
+var canRestart; 
 var backgroundLayer, mainLayer, hudLayer;
 function init(){
   backgroundLayer = project.activeLayer;
@@ -107,7 +107,7 @@ function newPlatform() {
 
   do {
     newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100,150), randomInt(-200,200));
-  } while (newOriginPoint.y > 550 || newOriginPoint.y < 50);
+  } while (newOriginPoint.y > 450 || newOriginPoint.y < 50);
   platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),platformSpeed, randomInt(0,3)));
 }
 

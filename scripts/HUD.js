@@ -3,6 +3,11 @@
 var timeText;
 var showedTime = 0;
 var speedText;
+var textStyle = new Style({
+  fontFamily: 'Impact',
+  fontWeight: 'bold',
+  justification: 'center'
+});
 
 var soundButton;    //A path, clicking it toggles the music
 
@@ -37,22 +42,16 @@ function updateTimeText() {
 function gameOverHud() {
   hudLayer.activate();
     var gameOverText = new PointText(view.center);
-    gameOverText.style = {
-      fontFamily: 'Impact',
-      fontWeight: 'bold',
-      fontSize: 75,
-      justification: 'center'
-    };
+    gameOverText.style = textStyle;
+    gameOverText.style.fontSize = 70;
     gameOverText.content = "GAME OVER";
     
     var restartText = new PointText(view.center+new Point(0,55));
-    restartText.style = {
-      fontFamily: 'Impact',
-      fontWeight: 'bold',
-      fontSize: 35,
-      justification: 'center'
-    };
+    restartText.style = textStyle;
+    restartText.style.fontSize = 35;
     restartText.content = "Press SPACE to restart";
+    
+    
   mainLayer.activate();
 }
 
