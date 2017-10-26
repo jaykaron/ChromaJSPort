@@ -391,8 +391,17 @@ var soundButton;    //A path, clicking it toggles the music
 function newHud() {
   hudLayer.activate();
     hudLayer.removeChildren();
+    var smallTextStyle = new Style({
+      fontSize: 15,
+      justification: "left",
+      fontWeight: "normal"
+    });
     timeText = new PointText(10,25);
+    timeText.style = textStyle;
+    timeText.style = smallTextStyle;
     speedText = new PointText(10,50);
+    speedText.style = textStyle;
+    speedText.style = smallTextStyle;
     
     updateHudNewLevel();
     updateHudNewSecond();
@@ -427,12 +436,6 @@ function gameOverHud() {
     restartText.style = textStyle;
     restartText.style.fontSize = 35;
     restartText.content = "Press SPACE to restart";
-    
-    var scoreText = new PointText(view.center+new Point(0,90));
-    scoreText.style = textStyle;
-    scoreText.style.fontSize = 25;
-    var scoreString = "You lasted "+timePassed+" second";
-    scoreText.content = timePassed > 1 ? scoreString+"s!" : scoreString+"!";
   mainLayer.activate();
 }
 
