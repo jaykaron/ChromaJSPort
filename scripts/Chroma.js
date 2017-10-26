@@ -6,8 +6,10 @@ var pc;         // The player obj
 var platforms;   //Array holding all the platform obj.s
 var startTime;
 
-var clearPlatforms; // A boolean true when a platform is off the screen to the left
+var screenWidth = 1000;
+var screenHeight = 600;
 
+var clearPlatforms; // A boolean true when a platform is off the screen to the left
 
 var music = new Audio("ChoazFantasy.mp3");
 
@@ -19,7 +21,7 @@ var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
 var platformSpeed = 1.7;
 
-var timePassed;
+var timePassed;     // The number of seconds since the game started
 
 var gameOn = false;
 var canRestart; 

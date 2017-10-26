@@ -51,7 +51,11 @@ function gameOverHud() {
     restartText.style.fontSize = 35;
     restartText.content = "Press SPACE to restart";
     
-    
+    var scoreText = new PointText(view.center+new Point(0,90));
+    scoreText.style = textStyle;
+    scoreText.style.fontSize = 25;
+    var scoreString = "You lasted "+timePassed+" second";
+    scoreText.content = timePassed > 1 ? scoreString+"s!" : scoreString+"!";
   mainLayer.activate();
 }
 

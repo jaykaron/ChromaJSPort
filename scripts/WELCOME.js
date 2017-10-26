@@ -1,7 +1,7 @@
 
 function initWelcome() {
   platforms = []
-  platforms.push(new Platform(new Rectangle(1000,275, 150,30), platformSpeed,0));
+  platforms.push(new Platform(new Rectangle(screenWidth+100,275, 150,30), platformSpeed,0));
   for(var i=0; i<8; i++)
     newPlatform();
   gameSpeed = initialGameSpeed*2;

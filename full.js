@@ -6,8 +6,10 @@ var pc;         // The player obj
 var platforms;   //Array holding all the platform obj.s
 var startTime;
 
-var clearPlatforms; // A boolean true when a platform is off the screen to the left
+var screenWidth = 1000;
+var screenHeight = 600;
 
+var clearPlatforms; // A boolean true when a platform is off the screen to the left
 
 var music = new Audio("ChoazFantasy.mp3");
 
@@ -19,10 +21,10 @@ var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
 var platformSpeed = 1.7;
 
-var timePassed;
+var timePassed;     // The number of seconds since the game started
 
 var gameOn = false;
-var canRestart;
+var canRestart; 
 var backgroundLayer, mainLayer, hudLayer;
 function init(){
   backgroundLayer = project.activeLayer;
@@ -107,7 +109,7 @@ function newPlatform() {
 
   do {
     newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100,150), randomInt(-200,200));
-  } while (newOriginPoint.y > 550 || newOriginPoint.y < 50);
+  } while (newOriginPoint.y > 450 || newOriginPoint.y < 50);
   platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),platformSpeed, randomInt(0,3)));
 }
 
@@ -200,7 +202,7 @@ function onFrameBackground(event){
 
 function initWelcome() {
   platforms = []
-  platforms.push(new Platform(new Rectangle(1000,275, 150,30), platformSpeed,0));
+  platforms.push(new Platform(new Rectangle(screenWidth+100,275, 150,30), platformSpeed,0));
   for(var i=0; i<8; i++)
     newPlatform();
   gameSpeed = initialGameSpeed*2;
@@ -256,7 +258,7 @@ function PC(x, y) {
       this.box.y += deltaY;
       var vector = new Point(0, deltaY);
       this.path.position += vector;
-      if(this.box.topRight.y > 600) {
+      if(this.box.topRight.y > screenHeight + 2) {
         gameOver();
       }
     }
@@ -426,7 +428,11 @@ function gameOverHud() {
     restartText.style.fontSize = 35;
     restartText.content = "Press SPACE to restart";
     
-    
+    var scoreText = new PointText(view.center+new Point(0,90));
+    scoreText.style = textStyle;
+    scoreText.style.fontSize = 25;
+    var scoreString = "You lasted "+timePassed+" second";
+    scoreText.content = timePassed > 1 ? scoreString+"s!" : scoreString+"!";
   mainLayer.activate();
 }
 
