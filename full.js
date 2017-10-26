@@ -86,8 +86,6 @@ function onFrame(event) {
       newPlatform();
     }
   }
-  
-  updateHudNewFrame();
 }
 function updateTime() {
   timePassed =  Math.round((Date.now() - startTime)/1000);
@@ -212,12 +210,12 @@ function initWelcome() {
     title.position = view.center;
     
     var spaceText = new PointText(view.center+new Point(0,95));
-    spaceText.style = textStyle;
+    spaceText.style = largeTextStyle;
     spaceText.style.fontSize = 35;
     spaceText.content = "Press SPACE to start";
     
     var controlsText = new PointText(view.center+new Point(0,130));
-    controlsText.style = textStyle;
+    controlsText.style = largeTextStyle;
     controlsText.style.fontSize = 20;
     controlsText.content = "SPACE to jump.   F and D to switch colors.";
   mainLayer.activate();
@@ -380,10 +378,16 @@ function Platform(rect, v, c) {
 var timeText;
 var showedTime = 0;
 var speedText;
-var textStyle = new Style({
+
+var largeTextStyle = new Style({
   fontFamily: 'Impact',
   fontWeight: 'bold',
   justification: 'center'
+});
+var smallTextStyle = new Style({
+  justification: "left",
+  fontWeight: "normal",
+  fontFamily: "arial black"
 });
 
 var soundButton;    //A path, clicking it toggles the music
@@ -391,25 +395,18 @@ var soundButton;    //A path, clicking it toggles the music
 function newHud() {
   hudLayer.activate();
     hudLayer.removeChildren();
-    var smallTextStyle = new Style({
-      fontSize: 15,
-      justification: "left",
-      fontWeight: "normal"
-    });
-    timeText = new PointText(10,25);
-    timeText.style = textStyle;
+    
+    timeText = new PointText(10,35);
     timeText.style = smallTextStyle;
-    speedText = new PointText(10,50);
-    speedText.style = textStyle;
+    timeText.style.fontSize = 25;
+    
+    speedText = new PointText(10,60);
     speedText.style = smallTextStyle;
+    speedText.style.fontSize = 15;
     
     updateHudNewLevel();
     updateHudNewSecond();
   mainLayer.activate();
-}
-
-function updateHudNewFrame() {
-  //vText.content = "V: " + pc.v;
 }
 
 function updateHudNewSecond() {
@@ -418,22 +415,22 @@ function updateHudNewSecond() {
 }
 
 function updateHudNewLevel() {
-  speedText.content = "Speed: "+gameSpeed;
+  speedText.content = gameSpeed.toPrecision(2) + " x";
 }
 
 function updateTimeText() {
-  timeText.content = "Time: " + showedTime;
+  timeText.content = showedTime;
 }
 
 function gameOverHud() {
   hudLayer.activate();
     var gameOverText = new PointText(view.center);
-    gameOverText.style = textStyle;
+    gameOverText.style = largeTextStyle;
     gameOverText.style.fontSize = 70;
     gameOverText.content = "GAME OVER";
     
     var restartText = new PointText(view.center+new Point(0,55));
-    restartText.style = textStyle;
+    restartText.style = largeTextStyle;
     restartText.style.fontSize = 35;
     restartText.content = "Press SPACE to restart";
   mainLayer.activate();

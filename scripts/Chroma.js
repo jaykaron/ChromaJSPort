@@ -86,8 +86,6 @@ function onFrame(event) {
       newPlatform();
     }
   }
-  
-  updateHudNewFrame();
 }
 function updateTime() {
   timePassed =  Math.round((Date.now() - startTime)/1000);

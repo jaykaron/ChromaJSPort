@@ -11,12 +11,12 @@ function initWelcome() {
     title.position = view.center;
     
     var spaceText = new PointText(view.center+new Point(0,95));
-    spaceText.style = textStyle;
+    spaceText.style = largeTextStyle;
     spaceText.style.fontSize = 35;
     spaceText.content = "Press SPACE to start";
     
     var controlsText = new PointText(view.center+new Point(0,130));
-    controlsText.style = textStyle;
+    controlsText.style = largeTextStyle;
     controlsText.style.fontSize = 20;
     controlsText.content = "SPACE to jump.   F and D to switch colors.";
   mainLayer.activate();
