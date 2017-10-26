@@ -15,7 +15,7 @@ var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
 var level;
-var timeIncrement = 15; // Number of seconds between level
+var timeIncrement = 12; // Number of seconds between level
 var initialGameSpeed = 1;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
@@ -58,6 +58,8 @@ function newGame() {
   startTime = Date.now();
 
 }
+
+var soundButton;    //A path, clicking it toggles the music
 function initMusic() {
   musicControlLayer.activate();
     soundButton = new Raster("volumeMed");

@@ -4,6 +4,9 @@ var timeText;
 var showedTime = 0;
 var speedText;
 
+var countDown;
+var speedingUpText;
+
 var largeTextStyle = new Style({
   fontFamily: 'Impact',
   fontWeight: 'bold',
@@ -14,8 +17,6 @@ var smallTextStyle = new Style({
   fontWeight: "normal",
   fontFamily: "arial black"
 });
-
-var soundButton;    //A path, clicking it toggles the music
 
 function newHud() {
   hudLayer.activate();
@@ -29,12 +30,28 @@ function newHud() {
     speedText.style = smallTextStyle;
     speedText.style.fontSize = 15;
     
+    countDown = new PointText(220, screenHeight - 20);
+    countDown.style = largeTextStyle;
+    countDown.style.fontSize = 90;
+    
+    speedingUpText = new PointText(20, screenHeight - 30);
+    speedingUpText.style = smallTextStyle;
+    speedingUpText.style.fontSize = 20;
+    
     updateHudNewLevel();
     updateHudNewSecond();
   mainLayer.activate();
 }
 
 function updateHudNewSecond() {
+  if(timeIncrement - timePassed%timeIncrement <= 3) {
+    countDown.content = timeIncrement - timePassed%timeIncrement;
+    speedingUpText.content = "Speeding up in";
+  }
+  else {
+    countDown.content = "";
+    speedingUpText.content = "";
+  }
   showedTime = timePassed;
   updateTimeText();
 }
@@ -58,6 +75,9 @@ function gameOverHud() {
     restartText.style = largeTextStyle;
     restartText.style.fontSize = 35;
     restartText.content = "Press SPACE to restart";
+    
+    countDown.content = "";
+    speedingUpText.content = "";
   mainLayer.activate();
 }
 
