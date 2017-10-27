@@ -15,7 +15,7 @@ var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
 var level;
-var timeIncrement = 5; // Number of seconds between level
+var timeIncrement = 10; // Number of seconds between level
 var initialGameSpeed = 1;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
@@ -108,7 +108,7 @@ function newPlatform() {
   var newOriginPoint;
 
   do {
-    newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100,150), randomInt(-200,200));
+    newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100, Math.min(100+10*level, 500)), randomInt(-250,250));
   } while (newOriginPoint.y > 550 || newOriginPoint.y < 120);
   platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),platformSpeed, randomInt(0,3)));
 }
