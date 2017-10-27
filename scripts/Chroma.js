@@ -15,7 +15,7 @@ var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
 var level;
-var timeIncrement = 12; // Number of seconds between level
+var timeIncrement = 5; // Number of seconds between level
 var initialGameSpeed = 1;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
@@ -94,8 +94,7 @@ function updateTime() {
   if(timePassed % timeIncrement == 0)
     if (level < 1 + timePassed / timeIncrement)
       nextLevel();
-  if(timePassed > showedTime)
-    updateHudNewSecond();
+    updateHud();
 }
 function nextLevel() {
   level++;
