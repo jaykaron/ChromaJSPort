@@ -45,10 +45,10 @@ function newGame() {
   gameSpeed = initialGameSpeed;
   timePassed = 0;  
 
-  pc = new PC(400,50);
+  pc = new PC(250,50);
   
   platforms = []
-  platforms.push(new Platform(new Rectangle(300,275, 250,30), platformSpeed,0));
+  platforms.push(new Platform(new Rectangle(200,275, 350,30), platformSpeed,0));
   for(var i=0; i<8; i++)
     newPlatform();
 
