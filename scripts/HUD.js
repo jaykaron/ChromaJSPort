@@ -30,14 +30,14 @@ function newHud() {
     speedText.style = smallTextStyle;
     speedText.style.fontSize = 15;
     
-    countDown = new PointText(230, screenHeight - 20);
-    //countDown = new PointText(view.center);
+    //countDown = new PointText(220, screenHeight - 20);
+    countDown = new PointText(view.center);
     countDown.style = largeTextStyle;
     countDown.style.fontSize = 90;
     
-    speedingUpText = new PointText(10, screenHeight - 40);
+    speedingUpText = new PointText(20, screenHeight - 30);
     speedingUpText.style = smallTextStyle;
-    speedingUpText.style.fontSize = 22;
+    speedingUpText.style.fontSize = 20;
     
     updateHudNewLevel();
     updateHudNewSecond();
@@ -58,7 +58,7 @@ function updateHudNewSecond() {
     countDown.content = timeIncrement - timePassed%timeIncrement;
     countDown.opacity = 0;
     countDown.style.fontSize = 150;
-    speedingUpText.content = "Speeding up in";
+    //speedingUpText.content = "Speeding up in";
   }
   else {
     countDown.content = "";
