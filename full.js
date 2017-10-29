@@ -24,8 +24,11 @@ var platformSpeed = 1.7;
 var timePassed;     // The number of seconds since the game started
 
 var gameOn = false;
-var canRestart; 
+
 var backgroundLayer, mainLayer, hudLayer;
+
+var highscore = 0;
+
 function init(){
   backgroundLayer = project.activeLayer;
   mainLayer = new Layer();
@@ -119,6 +122,8 @@ function randomInt(min, max) {
 
 function gameOver() {
   gameOn = false;
+  if(timePassed > highscore)
+    highscore = timePassed;
   gameOverHud();
 }
 
@@ -454,6 +459,11 @@ function gameOverHud() {
     restartText.style = largeTextStyle;
     restartText.style.fontSize = 35;
     restartText.content = "Press SPACE to restart";
+    
+    var scoreText = new PointText(view.center+new Point(0,120));
+    scoreText.style = largeTextStyle;
+    scoreText.style.fontSize = 28;
+    scoreText.content = "Longest Run: "+highscore;
     
     countDown.content = "";
     speedingUpText.content = "";
