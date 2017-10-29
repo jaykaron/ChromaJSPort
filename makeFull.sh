@@ -8,4 +8,6 @@ cat ~/Projects/ChromaJSPort/scripts/Platform.js >> ~/Projects/ChromaJSPort/full.
 cat ~/Projects/ChromaJSPort/scripts/HUD.js >> ~/Projects/ChromaJSPort/full.js
 cat ~/Projects/ChromaJSPort/scripts/INIT.js >> ~/Projects/ChromaJSPort/full.js
 
+date "+build successful at %H:%M:%S"
+
 exit 0
