@@ -2,6 +2,8 @@
 function initWelcome() {
   platforms = []
   platforms.push(new Platform(new Rectangle(screenWidth+100,275, 150,30), platformSpeed,0));
+  
+  level = 8;                    // newPlatform needs a defined level number
   for(var i=0; i<8; i++)
     newPlatform();
   gameSpeed = initialGameSpeed*2;
