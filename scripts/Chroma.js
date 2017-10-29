@@ -24,8 +24,11 @@ var platformSpeed = 1.7;
 var timePassed;     // The number of seconds since the game started
 
 var gameOn = false;
-var canRestart; 
+
 var backgroundLayer, mainLayer, hudLayer;
+
+var highscore = 0;
+
 function init(){
   backgroundLayer = project.activeLayer;
   mainLayer = new Layer();
@@ -119,6 +122,8 @@ function randomInt(min, max) {
 
 function gameOver() {
   gameOn = false;
+  if(timePassed > highscore)
+    highscore = timePassed;
   gameOverHud();
 }
 

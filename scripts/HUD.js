@@ -76,6 +76,11 @@ function gameOverHud() {
     restartText.style.fontSize = 35;
     restartText.content = "Press SPACE to restart";
     
+    var scoreText = new PointText(view.center+new Point(0,120));
+    scoreText.style = largeTextStyle;
+    scoreText.style.fontSize = 28;
+    scoreText.content = "Longest Run: "+highscore;
+    
     countDown.content = "";
     speedingUpText.content = "";
   mainLayer.activate();
