@@ -22,21 +22,13 @@ function newHud() {
   hudLayer.activate();
     hudLayer.removeChildren();
     
-    timeText = new PointText(10,35);
-    timeText.style = smallTextStyle;
-    timeText.style.fontSize = 25;
+    timeText = makeText(new Point(10,35), smallTextStyle, 26, "");
     
-    speedText = new PointText(10,60);
-    speedText.style = smallTextStyle;
-    speedText.style.fontSize = 15;
+    speedText = makeText(new Point(10,60), smallTextStyle, 15, "");
     
-    countDown = new PointText(220, screenHeight - 20);
-    countDown.style = largeTextStyle;
-    countDown.style.fontSize = 90;
+    countDown = makeText(new Point(220, screenHeight - 20), largeTextStyle, 90, "");
     
-    speedingUpText = new PointText(20, screenHeight - 30);
-    speedingUpText.style = smallTextStyle;
-    speedingUpText.style.fontSize = 20;
+    speedingUpText = makeText(new Point(20, screenHeight - 30), smallTextStyle, 20, "")
     
     updateHudNewLevel();
     updateHudNewSecond();
@@ -66,24 +58,36 @@ function updateTimeText() {
 
 function gameOverHud() {
   hudLayer.activate();
-    var gameOverText = new PointText(view.center);
-    gameOverText.style = largeTextStyle;
-    gameOverText.style.fontSize = 70;
-    gameOverText.content = "GAME OVER";
-    
-    var restartText = new PointText(view.center+new Point(0,55));
-    restartText.style = largeTextStyle;
-    restartText.style.fontSize = 35;
-    restartText.content = "Press SPACE to restart";
-    
-    var scoreText = new PointText(view.center+new Point(0,120));
-    scoreText.style = largeTextStyle;
-    scoreText.style.fontSize = 28;
-    scoreText.content = "Longest Run: "+highscore;
+    var gameOverText = makeText(new Point(view.center), largeTextStyle, 70, "GAME OVER");
+    var restartText = makeText(new Point(view.center+new Point(0,55)), largeTextStyle, 35, "Press SPACE to restart");
+    var scoreText = makeText(new Point(view.center+new Point(0,120)), largeTextStyle, 28, "Longest Run: "+highscore);
     
     countDown.content = "";
     speedingUpText.content = "";
   mainLayer.activate();
+}
+
+//  ******* TEXT HELPER FUNCTIONS *******
+function makeText(point, style, size, content) {
+  var text = new PointText(point);
+  text.style = style;
+  text.style.fontSize = size;
+  text.content = content;
+  return text;
+}
+
+function makeLink(pointText, url){
+  pointText.onMouseDown = function() {
+    window.open(url);
+  };
+  pointText.onMouseEnter = function(){
+    this.style.fontSize += 3;
+    document.body.style.cursor = 'pointer';
+  };
+  pointText.onMouseLeave = function(){
+    this.style.fontSize -= 3;
+    document.body.style.cursor = "";
+  };
 }
 
 // ********** End of HUD.js **********

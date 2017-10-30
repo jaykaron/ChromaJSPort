@@ -68,6 +68,31 @@ function initMusic() {
     soundButton = new Raster("volumeMed");
     soundButton.position = new Point(950, 550);
     soundButton.box = new Path.Rectangle(925,525, 50,50);
+    soundButton.box.fillColor = new Color(1,1,1, 0.00001);    //Needs to be filled in for onMouseDown to work
+    soundButton.box.onMouseDown = function(event){
+      switch (music.volume) {
+        case 0.5:
+          music.volume = 1;
+          soundButton.image = document.getElementById("volumeHigh")
+          break;
+        case 1:
+          music.volume = 0;
+          soundButton.image = document.getElementById("volumeOff")
+          break;
+        case 0:
+          music.volume = 0.25;
+          soundButton.image = document.getElementById("volumeLow")
+          break;
+        case 0.25:
+          music.volume = 0.5;
+          soundButton.image = document.getElementById("volumeMed")
+          break;
+        default:
+          music.volume = 1;
+          soundButton.image = document.getElementById("volumeHigh")
+          break;
+      }
+    };
   mainLayer.activate();
   music.play();
   music.loop = true;
@@ -148,32 +173,4 @@ function onKeyUp(event) {
   if(event.key = 'space')
     pc.peaked = true;
 }
-
-function onMouseDown(event) {
-  if(soundButton.box.contains(event.point)) {
-    switch (music.volume) {
-      case 0.5:
-        music.volume = 1;
-        soundButton.image = document.getElementById("volumeHigh")
-        break;
-      case 1:
-        music.volume = 0;
-        soundButton.image = document.getElementById("volumeOff")
-        break;
-      case 0:
-        music.volume = 0.25;
-        soundButton.image = document.getElementById("volumeLow")
-        break;
-      case 0.25:
-        music.volume = 0.5;
-        soundButton.image = document.getElementById("volumeMed")
-        break;
-      default:
-        music.volume = 1;
-        soundButton.image = document.getElementById("volumeHigh")
-        break;
-    }
-  }
-}
-
 // ********** End of Chroma.js **********
