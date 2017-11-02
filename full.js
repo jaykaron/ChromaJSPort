@@ -15,7 +15,7 @@ var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
 var level;
-var timeIncrement = 10; // Number of seconds between level
+var timeIncrement = 5; // Number of seconds between level
 
 var initialGameSpeed = 1;
 var gameSpeed;
@@ -408,10 +408,8 @@ function newHud() {
     timeText = makeText(new Point(10,35), smallTextStyle, 26, "");
     
     speedText = makeText(new Point(10,60), smallTextStyle, 15, "");
-
-    countDown = makeText(new Point(220, screenHeight - 20), largeTextStyle, 90, "");
     
-    speedingUpText = makeText(new Point(20, screenHeight - 30), smallTextStyle, 20, "")
+    countDown = makeText(new Point(view.center+new Point(0,75)), largeTextStyle, 150, "");
     
     updateHudNewLevel();
     updateHudNewSecond();
@@ -421,10 +419,12 @@ function newHud() {
 function updateHud(){
   if(timePassed > showedTime)
     updateHudNewSecond();
-  if(countDown.opacity < 1)
+  if(countDown.opacity < 1) 
     countDown.opacity+=0.05;
-  if(countDown.content)
-    countDown.style.fontSize-= 1;
+  if(countDown.content){
+    countDown.style.fontSize-= 0.8;
+    countDown.position.y -= 0.4;
+  }
 }
 
 function updateHudNewSecond() {
@@ -432,12 +432,11 @@ function updateHudNewSecond() {
     countDown.content = timeIncrement - timePassed%timeIncrement;
     countDown.opacity = 0;
     countDown.style.fontSize = 150;
-    //speedingUpText.content = "Speeding up in";
+    countDown.position = view.center+new Point(0,20)
   }
-  else {
+  else
     countDown.content = "";
-    speedingUpText.content = "";
-  }
+    
   showedTime = timePassed;
   updateTimeText();
 }
@@ -457,7 +456,6 @@ function gameOverHud() {
     var scoreText = makeText(new Point(view.center+new Point(0,120)), largeTextStyle, 28, "Longest Run: "+highscore);
     
     countDown.content = "";
-    speedingUpText.content = "";
   mainLayer.activate();
 }
 

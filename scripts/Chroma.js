@@ -15,7 +15,7 @@ var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
 var level;
-var timeIncrement = 10; // Number of seconds between level
+var timeIncrement = 5; // Number of seconds between level
 
 var initialGameSpeed = 1;
 var gameSpeed;
