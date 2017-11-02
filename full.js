@@ -15,7 +15,8 @@ var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
 var level;
-var timeIncrement = 5; // Number of seconds between level
+var timeIncrement = 10; // Number of seconds between level
+
 var initialGameSpeed = 1;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
@@ -24,8 +25,11 @@ var platformSpeed = 1.7;
 var timePassed;     // The number of seconds since the game started
 
 var gameOn = false;
-var canRestart; 
+
 var backgroundLayer, mainLayer, hudLayer;
+
+var highscore = 0;
+
 function init(){
   backgroundLayer = project.activeLayer;
   mainLayer = new Layer();
@@ -45,10 +49,10 @@ function newGame() {
   gameSpeed = initialGameSpeed;
   timePassed = 0;  
 
-  pc = new PC(400,50);
+  pc = new PC(250,50);
   
   platforms = []
-  platforms.push(new Platform(new Rectangle(300,275, 250,30), platformSpeed,0));
+  platforms.push(new Platform(new Rectangle(200,275, 350,30), platformSpeed,0));
   for(var i=0; i<8; i++)
     newPlatform();
 
@@ -65,6 +69,31 @@ function initMusic() {
     soundButton = new Raster("volumeMed");
     soundButton.position = new Point(950, 550);
     soundButton.box = new Path.Rectangle(925,525, 50,50);
+    soundButton.box.fillColor = new Color(1,1,1, 0.00001);    //Needs to be filled in for onMouseDown to work
+    soundButton.box.onMouseDown = function(event){
+      switch (music.volume) {
+        case 0.5:
+          music.volume = 1;
+          soundButton.image = document.getElementById("volumeHigh")
+          break;
+        case 1:
+          music.volume = 0;
+          soundButton.image = document.getElementById("volumeOff")
+          break;
+        case 0:
+          music.volume = 0.25;
+          soundButton.image = document.getElementById("volumeLow")
+          break;
+        case 0.25:
+          music.volume = 0.5;
+          soundButton.image = document.getElementById("volumeMed")
+          break;
+        default:
+          music.volume = 1;
+          soundButton.image = document.getElementById("volumeHigh")
+          break;
+      }
+    };
   mainLayer.activate();
   music.play();
   music.loop = true;
@@ -107,8 +136,8 @@ function newPlatform() {
   var newOriginPoint;
 
   do {
-    newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100,150), randomInt(-200,200));
-  } while (newOriginPoint.y > 450 || newOriginPoint.y < 50);
+    newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100, Math.min(100+10*level, 500)), randomInt(-250,250));
+  } while (newOriginPoint.y > 550 || newOriginPoint.y < 120);
   platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),platformSpeed, randomInt(0,3)));
 }
 
@@ -118,6 +147,8 @@ function randomInt(min, max) {
 
 function gameOver() {
   gameOn = false;
+  if(timePassed > highscore)
+    highscore = timePassed;
   gameOverHud();
 }
 
@@ -142,34 +173,6 @@ function onKeyUp(event) {
   if(event.key = 'space')
     pc.peaked = true;
 }
-
-function onMouseDown(event) {
-  if(soundButton.box.contains(event.point)) {
-    switch (music.volume) {
-      case 0.5:
-        music.volume = 1;
-        soundButton.image = document.getElementById("volumeHigh")
-        break;
-      case 1:
-        music.volume = 0;
-        soundButton.image = document.getElementById("volumeOff")
-        break;
-      case 0:
-        music.volume = 0.25;
-        soundButton.image = document.getElementById("volumeLow")
-        break;
-      case 0.25:
-        music.volume = 0.5;
-        soundButton.image = document.getElementById("volumeMed")
-        break;
-      default:
-        music.volume = 1;
-        soundButton.image = document.getElementById("volumeHigh")
-        break;
-    }
-  }
-}
-
 // ********** End of Chroma.js **********
 
 // ********** Start of BACKGROUND.js **********
@@ -202,6 +205,8 @@ function onFrameBackground(event){
 function initWelcome() {
   platforms = []
   platforms.push(new Platform(new Rectangle(screenWidth+100,275, 150,30), platformSpeed,0));
+  
+  level = 8;                    // newPlatform needs a defined level number
   for(var i=0; i<8; i++)
     newPlatform();
   gameSpeed = initialGameSpeed*2;
@@ -210,15 +215,17 @@ function initWelcome() {
     var title = new Raster("title");
     title.position = view.center;
     
-    var spaceText = new PointText(view.center+new Point(0,95));
-    spaceText.style = largeTextStyle;
-    spaceText.style.fontSize = 35;
-    spaceText.content = "Press SPACE to start";
+    var spaceText = makeText(view.center+new Point(0, 95), largeTextStyle, 35, "Press SPACE to start");
     
-    var controlsText = new PointText(view.center+new Point(0,130));
-    controlsText.style = largeTextStyle;
-    controlsText.style.fontSize = 20;
-    controlsText.content = "SPACE to jump.   F and D to switch colors.";
+    var controlsText = makeText(view.center+new Point(0, 130), largeTextStyle, 20, "SPACE to jump.   F and D to switch colors.");
+
+    var authorText = makeText(new Point(20, screenHeight - 55), smallTextStyle, 16, "Made by Jay Karon");
+    makeLink(authorText, "https://github.com/jaykaron");
+    
+    var originalText = makeText(new Point(20, screenHeight - 38), smallTextStyle, 12, "Game design by Ari Karon");
+    
+    var musicText = makeText(new Point(20, screenHeight - 20), smallTextStyle, 12, "Music: Chaoz Fantasy by ParagonX9");
+    makeLink(musicText, "https://soundcloud.com/paragonx9");
   mainLayer.activate();
 }
 
@@ -398,22 +405,13 @@ function newHud() {
   hudLayer.activate();
     hudLayer.removeChildren();
     
-    timeText = new PointText(10,35);
-    timeText.style = smallTextStyle;
-    timeText.style.fontSize = 25;
+    timeText = makeText(new Point(10,35), smallTextStyle, 26, "");
     
-    speedText = new PointText(10,60);
-    speedText.style = smallTextStyle;
-    speedText.style.fontSize = 15;
+    speedText = makeText(new Point(10,60), smallTextStyle, 15, "");
+
+    countDown = makeText(new Point(220, screenHeight - 20), largeTextStyle, 90, "");
     
-    //countDown = new PointText(220, screenHeight - 20);
-    countDown = new PointText(view.center);
-    countDown.style = largeTextStyle;
-    countDown.style.fontSize = 90;
-    
-    speedingUpText = new PointText(20, screenHeight - 30);
-    speedingUpText.style = smallTextStyle;
-    speedingUpText.style.fontSize = 20;
+    speedingUpText = makeText(new Point(20, screenHeight - 30), smallTextStyle, 20, "")
     
     updateHudNewLevel();
     updateHudNewSecond();
@@ -454,19 +452,36 @@ function updateTimeText() {
 
 function gameOverHud() {
   hudLayer.activate();
-    var gameOverText = new PointText(view.center);
-    gameOverText.style = largeTextStyle;
-    gameOverText.style.fontSize = 70;
-    gameOverText.content = "GAME OVER";
-    
-    var restartText = new PointText(view.center+new Point(0,55));
-    restartText.style = largeTextStyle;
-    restartText.style.fontSize = 35;
-    restartText.content = "Press SPACE to restart";
+    var gameOverText = makeText(new Point(view.center), largeTextStyle, 70, "GAME OVER");
+    var restartText = makeText(new Point(view.center+new Point(0,55)), largeTextStyle, 35, "Press SPACE to restart");
+    var scoreText = makeText(new Point(view.center+new Point(0,120)), largeTextStyle, 28, "Longest Run: "+highscore);
     
     countDown.content = "";
     speedingUpText.content = "";
   mainLayer.activate();
+}
+
+//  ******* TEXT HELPER FUNCTIONS *******
+function makeText(point, style, size, content) {
+  var text = new PointText(point);
+  text.style = style;
+  text.style.fontSize = size;
+  text.content = content;
+  return text;
+}
+
+function makeLink(pointText, url){
+  pointText.onMouseDown = function() {
+    window.open(url);
+  };
+  pointText.onMouseEnter = function(){
+    this.style.fontSize += 3;
+    document.body.style.cursor = 'pointer';
+  };
+  pointText.onMouseLeave = function(){
+    this.style.fontSize -= 3;
+    document.body.style.cursor = "";
+  };
 }
 
 // ********** End of HUD.js **********

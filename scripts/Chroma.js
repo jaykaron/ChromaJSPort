@@ -15,7 +15,8 @@ var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
 var level;
-var timeIncrement = 5; // Number of seconds between level
+var timeIncrement = 10; // Number of seconds between level
+
 var initialGameSpeed = 1;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
@@ -24,8 +25,11 @@ var platformSpeed = 1.7;
 var timePassed;     // The number of seconds since the game started
 
 var gameOn = false;
-var canRestart; 
+
 var backgroundLayer, mainLayer, hudLayer;
+
+var highscore = 0;
+
 function init(){
   backgroundLayer = project.activeLayer;
   mainLayer = new Layer();
@@ -45,10 +49,10 @@ function newGame() {
   gameSpeed = initialGameSpeed;
   timePassed = 0;  
 
-  pc = new PC(400,50);
+  pc = new PC(250,50);
   
   platforms = []
-  platforms.push(new Platform(new Rectangle(300,275, 250,30), platformSpeed,0));
+  platforms.push(new Platform(new Rectangle(200,275, 350,30), platformSpeed,0));
   for(var i=0; i<8; i++)
     newPlatform();
 
@@ -65,6 +69,31 @@ function initMusic() {
     soundButton = new Raster("volumeMed");
     soundButton.position = new Point(950, 550);
     soundButton.box = new Path.Rectangle(925,525, 50,50);
+    soundButton.box.fillColor = new Color(1,1,1, 0.00001);    //Needs to be filled in for onMouseDown to work
+    soundButton.box.onMouseDown = function(event){
+      switch (music.volume) {
+        case 0.5:
+          music.volume = 1;
+          soundButton.image = document.getElementById("volumeHigh")
+          break;
+        case 1:
+          music.volume = 0;
+          soundButton.image = document.getElementById("volumeOff")
+          break;
+        case 0:
+          music.volume = 0.25;
+          soundButton.image = document.getElementById("volumeLow")
+          break;
+        case 0.25:
+          music.volume = 0.5;
+          soundButton.image = document.getElementById("volumeMed")
+          break;
+        default:
+          music.volume = 1;
+          soundButton.image = document.getElementById("volumeHigh")
+          break;
+      }
+    };
   mainLayer.activate();
   music.play();
   music.loop = true;
@@ -107,8 +136,8 @@ function newPlatform() {
   var newOriginPoint;
 
   do {
-    newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100,150), randomInt(-200,200));
-  } while (newOriginPoint.y > 450 || newOriginPoint.y < 50);
+    newOriginPoint = lastPlat.box.topRight+new Point(randomInt(-100, Math.min(100+10*level, 500)), randomInt(-250,250));
+  } while (newOriginPoint.y > 550 || newOriginPoint.y < 120);
   platforms.push(new Platform(new Rectangle(newOriginPoint, new Size(randomInt(100,350), 30)),platformSpeed, randomInt(0,3)));
 }
 
@@ -118,6 +147,8 @@ function randomInt(min, max) {
 
 function gameOver() {
   gameOn = false;
+  if(timePassed > highscore)
+    highscore = timePassed;
   gameOverHud();
 }
 
@@ -142,32 +173,4 @@ function onKeyUp(event) {
   if(event.key = 'space')
     pc.peaked = true;
 }
-
-function onMouseDown(event) {
-  if(soundButton.box.contains(event.point)) {
-    switch (music.volume) {
-      case 0.5:
-        music.volume = 1;
-        soundButton.image = document.getElementById("volumeHigh")
-        break;
-      case 1:
-        music.volume = 0;
-        soundButton.image = document.getElementById("volumeOff")
-        break;
-      case 0:
-        music.volume = 0.25;
-        soundButton.image = document.getElementById("volumeLow")
-        break;
-      case 0.25:
-        music.volume = 0.5;
-        soundButton.image = document.getElementById("volumeMed")
-        break;
-      default:
-        music.volume = 1;
-        soundButton.image = document.getElementById("volumeHigh")
-        break;
-    }
-  }
-}
-
 // ********** End of Chroma.js **********
