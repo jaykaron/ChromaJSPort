@@ -16,6 +16,7 @@ var music = new Audio("ChoazFantasy.mp3");
 var prevLevel;
 var level;
 var timeIncrement = 10; // Number of seconds between level
+
 var initialGameSpeed = 1;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
@@ -122,8 +123,7 @@ function updateTime() {
   if(timePassed % timeIncrement == 0)
     if (level < 1 + timePassed / timeIncrement)
       nextLevel();
-  if(timePassed > showedTime)
-    updateHudNewSecond();
+    updateHud();
 }
 function nextLevel() {
   level++;
@@ -408,7 +408,7 @@ function newHud() {
     timeText = makeText(new Point(10,35), smallTextStyle, 26, "");
     
     speedText = makeText(new Point(10,60), smallTextStyle, 15, "");
-    
+
     countDown = makeText(new Point(220, screenHeight - 20), largeTextStyle, 90, "");
     
     speedingUpText = makeText(new Point(20, screenHeight - 30), smallTextStyle, 20, "")
@@ -418,10 +418,21 @@ function newHud() {
   mainLayer.activate();
 }
 
+function updateHud(){
+  if(timePassed > showedTime)
+    updateHudNewSecond();
+  if(countDown.opacity < 1)
+    countDown.opacity+=0.05;
+  if(countDown.content)
+    countDown.style.fontSize-= 1;
+}
+
 function updateHudNewSecond() {
   if(timeIncrement - timePassed%timeIncrement <= 3) {
     countDown.content = timeIncrement - timePassed%timeIncrement;
-    speedingUpText.content = "Speeding up in";
+    countDown.opacity = 0;
+    countDown.style.fontSize = 150;
+    //speedingUpText.content = "Speeding up in";
   }
   else {
     countDown.content = "";

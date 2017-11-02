@@ -35,10 +35,21 @@ function newHud() {
   mainLayer.activate();
 }
 
+function updateHud(){
+  if(timePassed > showedTime)
+    updateHudNewSecond();
+  if(countDown.opacity < 1)
+    countDown.opacity+=0.05;
+  if(countDown.content)
+    countDown.style.fontSize-= 1;
+}
+
 function updateHudNewSecond() {
   if(timeIncrement - timePassed%timeIncrement <= 3) {
     countDown.content = timeIncrement - timePassed%timeIncrement;
-    speedingUpText.content = "Speeding up in";
+    countDown.opacity = 0;
+    countDown.style.fontSize = 150;
+    //speedingUpText.content = "Speeding up in";
   }
   else {
     countDown.content = "";
