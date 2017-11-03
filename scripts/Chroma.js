@@ -147,9 +147,29 @@ function randomInt(min, max) {
 
 function gameOver() {
   gameOn = false;
-  if(timePassed > highscore)
+  if(navigator.cookieEnabled)
+    highscore = getScoreCookie();
+  if(timePassed > highscore){
+    setScoreCookie(timePassed);
     highscore = timePassed;
+  }
   gameOverHud();
+}
+
+function setScoreCookie(score) {
+    if(!navigator.cookieEnabled)
+      return;
+    var d = new Date();
+    d.setTime(d.getTime() + (10*24*60*60*1000)); // 10 days to expiry
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = "score=" + score + ";" + expires + ";path=/";
+}
+function getScoreCookie(){
+   var decodedCookie = decodeURIComponent(document.cookie);
+   var splitted = decodedCookie.split("=");
+   var cookieScore = splitted[splitted.length - 1]
+   console.log(cookieScore);
+   return cookieScore;
 }
 
 function onKeyDown(event){
