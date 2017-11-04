@@ -22,9 +22,10 @@ var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
 var platformSpeed = 1.7;
 
-var timePassed;     // The number of seconds since the game started
+var secondsPassed;     // The number of seconds since the game started
 
 var gameOn = false;
+var animate = true;
 
 var backgroundLayer, mainLayer, hudLayer;
 
@@ -47,7 +48,7 @@ function newGame() {
   
   level = 1;
   gameSpeed = initialGameSpeed;
-  timePassed = 0;  
+  secondsPassed = 0;  
 
   pc = new PC(250,50);
   
@@ -103,13 +104,14 @@ function initMusic() {
 // The GAME LOOP
 function onFrame(event) {
   onFrameBackground();
-  if(gameOn) {
+  if(gameOn && animate) {
     pc.move();
     updateTime();
   }
-  for (var i=0; i<platforms.length; i++) {
-    platforms[i].move();
-  }
+  if(animate)
+    for (var i=0; i<platforms.length; i++) {
+      platforms[i].move();
+    }
 
   if(clearPlatforms) {
     if (platforms[0].offScreen) {
@@ -119,9 +121,9 @@ function onFrame(event) {
   }
 }
 function updateTime() {
-  timePassed =  Math.round((Date.now() - startTime)/1000);
-  if(timePassed % timeIncrement == 0)
-    if (level < 1 + timePassed / timeIncrement)
+  secondsPassed =  Math.round((Date.now() - startTime)/1000);
+  if(secondsPassed % timeIncrement == 0)
+    if (level < 1 + secondsPassed / timeIncrement)
       nextLevel();
     updateHud();
 }
@@ -149,9 +151,9 @@ function gameOver() {
   gameOn = false;
   if(navigator.cookieEnabled)
     highscore = getScoreCookie();
-  if(timePassed > highscore){
-    setScoreCookie(timePassed);
-    highscore = timePassed;
+  if(secondsPassed > highscore){
+    setScoreCookie(secondsPassed);
+    highscore = secondsPassed;
   }
   gameOverHud();
 }
@@ -190,7 +192,10 @@ function onKeyDown(event){
 }
 
 function onKeyUp(event) {
-  if(event.key = 'space')
+  if(event.key == 'space')
     pc.peaked = true;
+  if(event.key == 'p')
+    animate = !animate;
+    
 }
 // ********** End of Chroma.js **********

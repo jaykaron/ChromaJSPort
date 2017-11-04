@@ -34,7 +34,7 @@ function newHud() {
 }
 
 function updateHud(){
-  if(timePassed > showedTime)
+  if(secondsPassed > showedTime)
     updateHudNewSecond();
   if(countDown.opacity < 1) 
     countDown.opacity+=0.05;
@@ -45,8 +45,8 @@ function updateHud(){
 }
 
 function updateHudNewSecond() {
-  if(timeIncrement - timePassed%timeIncrement <= 3) {
-    countDown.content = timeIncrement - timePassed%timeIncrement;
+  if(timeIncrement - secondsPassed%timeIncrement <= 3) {
+    countDown.content = timeIncrement - secondsPassed%timeIncrement;
     countDown.opacity = 0;
     countDown.style.fontSize = 150;
     countDown.position = view.center+new Point(0,20)
@@ -54,7 +54,7 @@ function updateHudNewSecond() {
   else
     countDown.content = "";
     
-  showedTime = timePassed;
+  showedTime = secondsPassed;
   updateTimeText();
 }
 
