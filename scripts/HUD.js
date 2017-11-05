@@ -7,6 +7,9 @@ var speedText;
 var countDown;
 var speedingUpText;
 
+var pausedText, pausedSmallText;
+
+
 var largeTextStyle = new Style({
   fontFamily: 'Impact',
   fontWeight: 'bold',
@@ -28,13 +31,16 @@ function newHud() {
     
     countDown = makeText(new Point(view.center+new Point(0,75)), largeTextStyle, 150, "");
     
+    pausedText = makeText(new Point(view.center), largeTextStyle, 70, "");
+    pausedSmallText = makeText(new Point(view.center+new Point(0,55)), largeTextStyle, 35, "");
+    
     updateHudNewLevel();
     updateHudNewSecond();
   mainLayer.activate();
 }
 
 function updateHud(){
-  if(timePassed > showedTime)
+  if(secondsPassed > showedTime)
     updateHudNewSecond();
   if(countDown.opacity < 1) 
     countDown.opacity+=0.05;
@@ -45,8 +51,8 @@ function updateHud(){
 }
 
 function updateHudNewSecond() {
-  if(timeIncrement - timePassed%timeIncrement <= 3) {
-    countDown.content = timeIncrement - timePassed%timeIncrement;
+  if(timeIncrement - secondsPassed%timeIncrement <= 3) {
+    countDown.content = timeIncrement - secondsPassed%timeIncrement;
     countDown.opacity = 0;
     countDown.style.fontSize = 150;
     countDown.position = view.center+new Point(0,20)
@@ -54,7 +60,7 @@ function updateHudNewSecond() {
   else
     countDown.content = "";
     
-  showedTime = timePassed;
+  showedTime = secondsPassed;
   updateTimeText();
 }
 
@@ -75,6 +81,16 @@ function gameOverHud() {
     countDown.content = "";
   mainLayer.activate();
 }
+
+function pausedHud(){
+  pausedText.content = "PAUSED"
+  pausedSmallText.content = "Press P to continue";
+}
+function unpausedHud(){
+  pausedText.content = "";
+  pausedSmallText.content = "";
+}
+
 
 //  ******* TEXT HELPER FUNCTIONS *******
 function makeText(point, style, size, content) {

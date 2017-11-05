@@ -15,20 +15,23 @@ var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
 var level;
-var timeIncrement = 5; // Number of seconds between level
+var timeIncrement = 10; // Number of seconds between level
 
 var initialGameSpeed = 1;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
 var platformSpeed = 1.7;
 
-var timePassed;     // The number of seconds since the game started
+var timePassed;
+var secondsPassed;     // The number of seconds since the game started
 
 var gameOn = false;
+var paused = false;
 
 var backgroundLayer, mainLayer, hudLayer;
 
 var highscore = 0;
+
 
 function init(){
   backgroundLayer = project.activeLayer;
@@ -47,7 +50,9 @@ function newGame() {
   
   level = 1;
   gameSpeed = initialGameSpeed;
-  timePassed = 0;  
+  
+  timePassed = 0;
+  secondsPassed = 0;  
 
   pc = new PC(250,50);
   
@@ -103,13 +108,15 @@ function initMusic() {
 // The GAME LOOP
 function onFrame(event) {
   onFrameBackground();
-  if(gameOn) {
+  
+  if(gameOn && !paused) {
     pc.move();
-    updateTime();
+    updateTime(event);
   }
-  for (var i=0; i<platforms.length; i++) {
-    platforms[i].move();
-  }
+  if(!paused)
+    for (var i=0; i<platforms.length; i++) {
+      platforms[i].move();
+    }
 
   if(clearPlatforms) {
     if (platforms[0].offScreen) {
@@ -118,10 +125,15 @@ function onFrame(event) {
     }
   }
 }
-function updateTime() {
-  timePassed =  Math.round((Date.now() - startTime)/1000);
-  if(timePassed % timeIncrement == 0)
-    if (level < 1 + timePassed / timeIncrement)
+function updateTime(event) {
+  if(event.delta > 0.05){
+    pause();
+    return;
+  }
+  timePassed += event.delta;
+  secondsPassed = Math.floor(timePassed);
+  if(secondsPassed % timeIncrement == 0)
+    if (level < 1 + secondsPassed / timeIncrement)
       nextLevel();
     updateHud();
 }
@@ -145,13 +157,29 @@ function randomInt(min, max) {
   return Math.floor(Math.random()*(max-min)+min);
 }
 
+function pause() {
+  paused = true;
+  pausedHud();
+  
+}
+function unpause(){
+  paused = false;
+  unpausedHud();
+}
+function pauseToggle() {
+  if(!paused)
+    pause();
+  else 
+    unpause();
+}
+
 function gameOver() {
   gameOn = false;
   if(navigator.cookieEnabled)
     highscore = getScoreCookie();
-  if(timePassed > highscore){
-    setScoreCookie(timePassed);
-    highscore = timePassed;
+  if(secondsPassed > highscore){
+    setScoreCookie(secondsPassed);
+    highscore = secondsPassed;
   }
   gameOverHud();
 }
@@ -168,7 +196,6 @@ function getScoreCookie(){
    var decodedCookie = decodeURIComponent(document.cookie);
    var splitted = decodedCookie.split("=");
    var cookieScore = splitted[splitted.length - 1]
-   console.log(cookieScore);
    return cookieScore;
 }
 
@@ -190,8 +217,11 @@ function onKeyDown(event){
 }
 
 function onKeyUp(event) {
-  if(event.key = 'space')
+  if(event.key == 'space')
     pc.peaked = true;
+  if(event.key == 'p' && gameOn)
+    pauseToggle();
+    
 }
 // ********** End of Chroma.js **********
 
@@ -410,6 +440,9 @@ var speedText;
 var countDown;
 var speedingUpText;
 
+var pausedText, pausedSmallText;
+
+
 var largeTextStyle = new Style({
   fontFamily: 'Impact',
   fontWeight: 'bold',
@@ -431,13 +464,16 @@ function newHud() {
     
     countDown = makeText(new Point(view.center+new Point(0,75)), largeTextStyle, 150, "");
     
+    pausedText = makeText(new Point(view.center), largeTextStyle, 70, "");
+    pausedSmallText = makeText(new Point(view.center+new Point(0,55)), largeTextStyle, 35, "");
+    
     updateHudNewLevel();
     updateHudNewSecond();
   mainLayer.activate();
 }
 
 function updateHud(){
-  if(timePassed > showedTime)
+  if(secondsPassed > showedTime)
     updateHudNewSecond();
   if(countDown.opacity < 1) 
     countDown.opacity+=0.05;
@@ -448,8 +484,8 @@ function updateHud(){
 }
 
 function updateHudNewSecond() {
-  if(timeIncrement - timePassed%timeIncrement <= 3) {
-    countDown.content = timeIncrement - timePassed%timeIncrement;
+  if(timeIncrement - secondsPassed%timeIncrement <= 3) {
+    countDown.content = timeIncrement - secondsPassed%timeIncrement;
     countDown.opacity = 0;
     countDown.style.fontSize = 150;
     countDown.position = view.center+new Point(0,20)
@@ -457,7 +493,7 @@ function updateHudNewSecond() {
   else
     countDown.content = "";
     
-  showedTime = timePassed;
+  showedTime = secondsPassed;
   updateTimeText();
 }
 
@@ -478,6 +514,16 @@ function gameOverHud() {
     countDown.content = "";
   mainLayer.activate();
 }
+
+function pausedHud(){
+  pausedText.content = "PAUSED"
+  pausedSmallText.content = "Press P to continue";
+}
+function unpausedHud(){
+  pausedText.content = "";
+  pausedSmallText.content = "";
+}
+
 
 //  ******* TEXT HELPER FUNCTIONS *******
 function makeText(point, style, size, content) {
