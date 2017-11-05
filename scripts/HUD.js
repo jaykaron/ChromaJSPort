@@ -7,6 +7,9 @@ var speedText;
 var countDown;
 var speedingUpText;
 
+var pausedText, pausedSmallText;
+
+
 var largeTextStyle = new Style({
   fontFamily: 'Impact',
   fontWeight: 'bold',
@@ -27,6 +30,9 @@ function newHud() {
     speedText = makeText(new Point(10,60), smallTextStyle, 15, "");
     
     countDown = makeText(new Point(view.center+new Point(0,75)), largeTextStyle, 150, "");
+    
+    pausedText = makeText(new Point(view.center), largeTextStyle, 70, "");
+    pausedSmallText = makeText(new Point(view.center+new Point(0,55)), largeTextStyle, 35, "");
     
     updateHudNewLevel();
     updateHudNewSecond();
@@ -75,6 +81,16 @@ function gameOverHud() {
     countDown.content = "";
   mainLayer.activate();
 }
+
+function pausedHud(){
+  pausedText.content = "PAUSED"
+  pausedSmallText.content = "Press P to continue";
+}
+function unpausedHud(){
+  pausedText.content = "";
+  pausedSmallText.content = "";
+}
+
 
 //  ******* TEXT HELPER FUNCTIONS *******
 function makeText(point, style, size, content) {

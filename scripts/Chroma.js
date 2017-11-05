@@ -15,21 +15,23 @@ var music = new Audio("ChoazFantasy.mp3");
 
 var prevLevel;
 var level;
-var timeIncrement = 5; // Number of seconds between level
+var timeIncrement = 10; // Number of seconds between level
 
 var initialGameSpeed = 1;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
 var platformSpeed = 1.7;
 
+var timePassed;
 var secondsPassed;     // The number of seconds since the game started
 
 var gameOn = false;
-var animate = true;
+var paused = false;
 
 var backgroundLayer, mainLayer, hudLayer;
 
 var highscore = 0;
+
 
 function init(){
   backgroundLayer = project.activeLayer;
@@ -48,6 +50,8 @@ function newGame() {
   
   level = 1;
   gameSpeed = initialGameSpeed;
+  
+  timePassed = 0;
   secondsPassed = 0;  
 
   pc = new PC(250,50);
@@ -104,11 +108,12 @@ function initMusic() {
 // The GAME LOOP
 function onFrame(event) {
   onFrameBackground();
-  if(gameOn && animate) {
+  
+  if(gameOn && !paused) {
     pc.move();
-    updateTime();
+    updateTime(event);
   }
-  if(animate)
+  if(!paused)
     for (var i=0; i<platforms.length; i++) {
       platforms[i].move();
     }
@@ -120,8 +125,13 @@ function onFrame(event) {
     }
   }
 }
-function updateTime() {
-  secondsPassed =  Math.round((Date.now() - startTime)/1000);
+function updateTime(event) {
+  if(event.delta > 0.05){
+    pause();
+    return;
+  }
+  timePassed += event.delta;
+  secondsPassed = Math.floor(timePassed);
   if(secondsPassed % timeIncrement == 0)
     if (level < 1 + secondsPassed / timeIncrement)
       nextLevel();
@@ -147,6 +157,22 @@ function randomInt(min, max) {
   return Math.floor(Math.random()*(max-min)+min);
 }
 
+function pause() {
+  paused = true;
+  pausedHud();
+  
+}
+function unpause(){
+  paused = false;
+  unpausedHud();
+}
+function pauseToggle() {
+  if(!paused)
+    pause();
+  else 
+    unpause();
+}
+
 function gameOver() {
   gameOn = false;
   if(navigator.cookieEnabled)
@@ -170,7 +196,6 @@ function getScoreCookie(){
    var decodedCookie = decodeURIComponent(document.cookie);
    var splitted = decodedCookie.split("=");
    var cookieScore = splitted[splitted.length - 1]
-   console.log(cookieScore);
    return cookieScore;
 }
 
@@ -194,8 +219,8 @@ function onKeyDown(event){
 function onKeyUp(event) {
   if(event.key == 'space')
     pc.peaked = true;
-  if(event.key == 'p')
-    animate = !animate;
+  if(event.key == 'p' && gameOn)
+    pauseToggle();
     
 }
 // ********** End of Chroma.js **********
