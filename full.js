@@ -17,7 +17,7 @@ var prevLevel;
 var level;
 var timeIncrement = 10; // Number of seconds between level
 
-var initialGameSpeed = 1;
+var initialGameSpeed = 4;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
 var platformSpeed = 1.7;
@@ -369,9 +369,11 @@ function PC(x, y) {
         if(this.onPlatform && this.v >= 0) {    //Landing or on a platform
       		this.v = -5;
       	}
-      	else if (!this.peaked && this.v < 0) {
+      	else if (this.v < 0) {
       		this.v -= 0.5;
       	}
+        if(this.v == 0)
+          this.peaked = true;
         if(this.v < this.MIN_V || this.v > 0) {
       		this.peaked = true;
       	}
@@ -379,7 +381,7 @@ function PC(x, y) {
       else if(!this.onPlatform) {
           this.v += this.a;
       }
-      else if (this.v > 0) {
+      else if (this.v > 0) {    // on a platform
         this.v = 0;
       }
       if(this.v > this.MAX_V)
