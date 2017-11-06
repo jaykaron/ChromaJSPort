@@ -17,7 +17,7 @@ var prevLevel;
 var level;
 var timeIncrement = 10; // Number of seconds between level
 
-var initialGameSpeed = 4;
+var initialGameSpeed = 1;
 var gameSpeed;
 var gameSpeedIncrement = 0.2; // How much the game speeds up each time
 var platformSpeed = 1.7;
