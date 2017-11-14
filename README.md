@@ -1,4 +1,9 @@
 # Chroma
+
+**DEVELOPMENT HAS MOVED**
+
+As of November 2017 the development of Chroma has moved to the [repository](https://github.com/jaykaron/jaykaron.github.io/tree/moveChroma/projects/chroma/) of my personal [webpage](https://jaykaron.github.io)
+
 Way back in 2014, my brother made a game in Java for a final school project and since then Java applets have fallen a bit out of style. <br>
 After fiddling around a bit with JavaScript, I realized that maybe it is time for __*Chroma*__ to return.
 
