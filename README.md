@@ -1,5 +1,5 @@
 ## :warning: **DEVELOPMENT HAS MOVED** :warning:
-As of November 2017 the development of Chroma has moved to the [repository](https://github.com/jaykaron/jaykaron.github.io/tree/moveChroma/projects/chroma/) of my personal [webpage](https://jaykaron.github.io)
+As of November 2017 the development of Chroma has moved to the [repository](https://github.com/jaykaron/jaykaron.github.io/tree/master/projects/chroma) of my personal [webpage](https://jaykaron.github.io)
 
 # Chroma
 
